@@ -21,7 +21,7 @@ class RegisterApi(MethodView):
         if User.exists(email=email):
             return make_response(jsonify({'error': 'A user exists with that email'}), 409)
 
-        user = User(email=email, password=password)
+        user = User(email=email, password=password).save()
 
         return make_response(jsonify(dict(user=user.email, password=user.password)), 200)
 
