@@ -7,5 +7,8 @@ app = Flask(__name__)
 app.config.from_object(app_config['development'])
 
 from app.auth.views import auth
+from app.bucketlists.views import bucketlists
 
+
+app.register_blueprint(bucketlists)
 app.register_blueprint(auth)

@@ -60,6 +60,11 @@ class LoginApi(MethodView):
         return make_response(jsonify(dict(email=user.email, password=str(user.password))), 200)
 
 
+class LogoutApi(MethodView):
+    def post(self):
+        pass
+
+
 class ResetPassword(MethodView):
     def post(self):
         email = request.args.get('email')
@@ -105,5 +110,6 @@ class ChangePassword(MethodView):
 
 auth.add_url_rule('/register', view_func=RegisterApi.as_view('register-api'))
 auth.add_url_rule('/login', view_func=LoginApi.as_view('login-api'))
+auth.add_url_rule('/logout', view_func=LogoutApi.as_view('logout-api'))
 auth.add_url_rule('/reset_password', view_func=ResetPassword.as_view('reset-api'))
 auth.add_url_rule('/change_password', view_func=ChangePassword.as_view('change_password-api'))
