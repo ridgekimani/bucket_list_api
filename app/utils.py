@@ -7,3 +7,4 @@ def validate_email(email):
                     email) is not None:
             return True
     return False
+

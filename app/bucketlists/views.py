@@ -20,7 +20,7 @@ class BucketListsApi(MethodView):
 
 
 class ItemsApi(MethodView):
-    def get(self, bucket_id):
+    def get(self, bucket_id=None):
         pass
 
     def post(self, bucket_id):
@@ -34,5 +34,5 @@ class ItemsApi(MethodView):
 
 bucketlist.add_url_rule('/', view_func=BucketListsApi.as_view('buckets'))
 bucketlist.add_url_rule('/<int:bucket_id>', view_func=BucketListsApi.as_view('bucket_specific'))
-bucketlist.add_url_rule('/<int:bucket_id>/items', view_func=BucketListsApi.as_view('bucket-items'))
-bucketlist.add_url_rule('/<int:bucket_id>/items/<int:bucket_id>', view_func=BucketListsApi.as_view('item'))
+bucketlist.add_url_rule('/<int:bucket_id>/items', view_func=ItemsApi.as_view('bucket-items'))
+bucketlist.add_url_rule('/<int:bucket_id>/items/<int:item_id>', view_func=ItemsApi.as_view('item'))

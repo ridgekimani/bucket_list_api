@@ -35,7 +35,9 @@ class RegisterApi(MethodView):
 
         user = User(email=email, password=password).save()
 
-        return make_response(jsonify(dict(user=user.email)), 200)
+        token = user.generate_token()
+
+        return make_response(jsonify(dict(user=user.email, token=token.decode('ascii'))), 200)
 
 
 class LoginApi(MethodView):
@@ -58,7 +60,10 @@ class LoginApi(MethodView):
         if not user.check_password(password):
             return make_response(jsonify(dict(error='Incorrect password!')), 403)
 
-        return make_response(jsonify(dict(email=user.email, password=str(user.password))), 200)
+        token = user.generate_token()
+
+        return make_response(jsonify(dict(email=user.email, password=str(user.password)),
+                                     token=token.decode('ascii')), 200)
 
 
 class LogoutApi(MethodView):
@@ -108,6 +113,7 @@ class ChangePassword(MethodView):
         user.password = new_password
         user.save()
         return make_response(jsonify(dict(success='Password changed successfully')), 200)
+
 
 auth.add_url_rule('/register', view_func=RegisterApi.as_view('register-api'))
 auth.add_url_rule('/login', view_func=LoginApi.as_view('login-api'))
