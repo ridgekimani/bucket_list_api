@@ -32,7 +32,7 @@ class ItemsApi(MethodView):
     def delete(self, bucket_id, item_id):
         pass
 
-bucketlists.add_url_rule('/', BucketListsApi.as_view('buckets'))
-bucketlists.add_url_rule('/<int:bucket_id>', BucketListsApi.as_view('bucket_specific'))
-bucketlists.add_url_rule('/<int:bucket_id>/items', BucketListsApi.as_view('bucket-items'))
-bucketlists.add_url_rule('/<int:bucket_id>/items/<int:bucket_id>', BucketListsApi.as_view('item'))
+# bucketlists.add_url_rule('/', BucketListsApi.as_view('buckets'))
+# bucketlists.add_url_rule('/<int:bucket_id>', BucketListsApi.as_view('bucket_specific'))
+# bucketlists.add_url_rule('/<int:bucket_id>/items', BucketListsApi.as_view('bucket-items'))
+# bucketlists.add_url_rule('/<int:bucket_id>/items/<int:bucket_id>', BucketListsApi.as_view('item'))

@@ -13,8 +13,9 @@ auth = Blueprint('auth', __name__, url_prefix='/auth')
 
 class RegisterApi(MethodView):
     def post(self):
-        email = request.args.get('email')
-        password = request.args.get('password')
+        email = request.form.get('email')
+        password = request.form.get('password')
+        print(email)
 
         if not email:
             return make_response(jsonify(dict(error='Please enter your email address')), 400)
@@ -34,13 +35,13 @@ class RegisterApi(MethodView):
 
         user = User(email=email, password=password).save()
 
-        return make_response(jsonify(dict(user=user.email, password=user.password)), 200)
+        return make_response(jsonify(dict(user=user.email)), 200)
 
 
 class LoginApi(MethodView):
     def post(self):
-        email = request.args.get('email')
-        password = request.args.get('password')
+        email = request.form.get('email')
+        password = request.form.get('password')
 
         if not email:
             return make_response(jsonify(dict(error='Please enter your email address!')), 400)
@@ -67,7 +68,7 @@ class LogoutApi(MethodView):
 
 class ResetPassword(MethodView):
     def post(self):
-        email = request.args.get('email')
+        email = request.form.get('email')
 
         if not email:
             return make_response(jsonify(dict(error='Please enter your email address')), 400)
@@ -87,10 +88,10 @@ class ResetPassword(MethodView):
 
 class ChangePassword(MethodView):
     def post(self):
-        email = request.args.get('email')
-        old_password = request.args.get('old_password')
-        new_password = request.args.get('new_password')
-        confirm_new = request.args.get('confirm_password')
+        email = request.form.get('email')
+        old_password = request.form.get('old_password')
+        new_password = request.form.get('new_password')
+        confirm_new = request.form.get('confirm_password')
 
         user = User.query.filter_by(email=email).first()
 
