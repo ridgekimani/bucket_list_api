@@ -52,3 +52,21 @@ class TestLoginApi(TestCase):
         self.assertTrue(response.status_code, 400)
         response = self.app.post('/auth/login?password=password')
         self.assertTrue(response.status_code, 400)
+
+
+class TestResetPassword(TestCase):
+    def setUp(self):
+        self.app = app.test_client()
+
+    def test_reset_email(self):
+        response = self.app.post('/auth/reset_password?email=test@email.com')
+        self.assertTrue(response.status_code, 201)
+
+    def test_reset_non_existing_email(self):
+        response = self.app.post('/auth/reset_password?email=testing@email.com')
+        self.assertTrue(response.status_code, 400)
+
+    def test_reset_email_with_less_credentials(self):
+        response = self.app.post('/auth/reset_password')
+        self.assertTrue(response.status_code, 400)
+
