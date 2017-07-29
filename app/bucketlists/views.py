@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask.views import MethodView
 
-bucketlists = Blueprint('bucketlists', __name__, url_prefix='/bucketlists')
+bucketlist = Blueprint('bucketlists', __name__, url_prefix='/bucketlists')
 
 
 class BucketListsApi(MethodView):
@@ -32,7 +32,7 @@ class ItemsApi(MethodView):
     def delete(self, bucket_id, item_id):
         pass
 
-# bucketlists.add_url_rule('/', BucketListsApi.as_view('buckets'))
-# bucketlists.add_url_rule('/<int:bucket_id>', BucketListsApi.as_view('bucket_specific'))
-# bucketlists.add_url_rule('/<int:bucket_id>/items', BucketListsApi.as_view('bucket-items'))
-# bucketlists.add_url_rule('/<int:bucket_id>/items/<int:bucket_id>', BucketListsApi.as_view('item'))
+bucketlist.add_url_rule('/', view_func=BucketListsApi.as_view('buckets'))
+bucketlist.add_url_rule('/<int:bucket_id>', view_func=BucketListsApi.as_view('bucket_specific'))
+bucketlist.add_url_rule('/<int:bucket_id>/items', view_func=BucketListsApi.as_view('bucket-items'))
+bucketlist.add_url_rule('/<int:bucket_id>/items/<int:bucket_id>', view_func=BucketListsApi.as_view('item'))

@@ -10,5 +10,5 @@ from app.auth.views import auth
 from app.bucketlists.views import bucketlists
 
 
-app.register_blueprint(bucketlists)
 app.register_blueprint(auth)
+app.register_blueprint(bucketlists)
