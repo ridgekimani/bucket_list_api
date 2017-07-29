@@ -48,6 +48,15 @@ class User(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    @classmethod
+    def drop_all(cls):
+        try:
+            db.session.query(cls).delete()
+            db.session.commit()
+
+        except Exception:
+            db.session.rollback()
+
     def get_id(self):
         return self.user_id
 
