@@ -16,12 +16,11 @@ class RegisterApi(MethodView):
     def post(self):
         email = request.form.get('email')
         password = request.form.get('password')
-        print(email)
 
         if not email:
             return make_response(jsonify(dict(error='Please enter your email address')), 400)
 
-        if not validate_email(email) or len(email) < 5:
+        if not validate_email(email):
             return make_response(jsonify(dict(error='Invalid email address')), 400)
 
         if not password:
