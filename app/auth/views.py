@@ -4,6 +4,8 @@ from flask import Blueprint, request, jsonify, make_response
 
 from flask.views import MethodView
 
+from validate_email import validate_email
+
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
 
@@ -13,13 +15,16 @@ class RegisterApi(MethodView):
         password = request.args.get('password')
 
         if not email:
-            return make_response(jsonify({'error': 'Please enter your email address'}), 400)
+            return make_response(jsonify(dict(error='Please enter your email address')), 400)
+
+        if not validate_email(email):
+            return make_response(jsonify(dict(error='Invalid email address')), 400)
 
         if not password:
-            return make_response(jsonify({'error': 'Please enter your password'}), 400)
+            return make_response(jsonify(dict(error='Please enter your password')), 400)
 
         if User.exists(email=email):
-            return make_response(jsonify({'error': 'A user exists with that email'}), 409)
+            return make_response(jsonify(dict(error='A user exists with that email')), 409)
 
         user = User(email=email, password=password).save()
 
@@ -32,19 +37,19 @@ class LoginApi(MethodView):
         password = request.args.get('password')
 
         if not email:
-            return make_response(jsonify({'error': 'Please enter your email address!'}), 400)
+            return make_response(jsonify(dict(error='Please enter your email address!')), 400)
 
         if not password:
-            return make_response(jsonify({'error': 'Please enter your password!'}), 400)
+            return make_response(jsonify(dict(error='Please enter your password!')), 400)
 
         user = User.query.filter_by(email=email).first()
 
         if not user:
-            return make_response(jsonify({'error': 'Email not found! Please register to '
-                                                   'continue'}), 400)
+            return make_response(jsonify(dict(error='Email not found! Please register to '
+                                                    'continue')), 400)
 
         if not user.check_password(password):
-            return make_response(jsonify({'error': 'Incorrect password!'}))
+            return make_response(jsonify(dict(error='Incorrect password!')), 403)
 
         return make_response(jsonify(dict(email=user.email, password=str(user.password))), 200)
 
