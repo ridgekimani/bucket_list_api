@@ -2,11 +2,12 @@ import uuid
 
 from app.models import User
 
+from app.utils import validate_email
+
 from flask import Blueprint, request, jsonify, make_response
 
 from flask.views import MethodView
 
-from validate_email import validate_email
 
 auth = Blueprint('auth', __name__, url_prefix='/auth')
 
