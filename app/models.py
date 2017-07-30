@@ -6,6 +6,8 @@ from flask_bcrypt import Bcrypt
 
 from flask_sqlalchemy import SQLAlchemy
 
+from itsdangerous import TimedJSONWebSignatureSerializer, BadSignature, SignatureExpired
+
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
@@ -47,6 +49,7 @@ class User(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+        return User.query.filter_by(email=self.email).first()
 
     @classmethod
     def drop_all(cls):
@@ -59,6 +62,21 @@ class User(db.Model):
 
     def get_id(self):
         return self.user_id
+
+    def generate_token(self):
+        key = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'], expires_in=1800)
+        return key.dumps(dict(id=self.id))
+
+    @staticmethod
+    def verify_token(token):
+        key = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'])
+
+        try:
+            data = key.loads(token)
+
+        except (SignatureExpired, BadSignature):
+            return None
+        return User.query.filter_by(id=data['id']).first()
 
 
 class Bucket(db.Model):
