@@ -71,7 +71,9 @@ class LoginApi(MethodView):
 
 class LogoutApi(MethodView):
     def post(self):
-        pass
+        session.pop('user', None)
+        session.pop('token', None)
+        return make_response(jsonify(dict(success='Logout successful')), 200)
 
 
 class ResetPassword(MethodView):
