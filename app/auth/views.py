@@ -13,6 +13,7 @@ auth = Blueprint('auth', __name__, url_prefix='/auth')
 
 
 class RegisterApi(MethodView):
+
     def post(self):
         email = request.form.get('email')
         password = request.form.get('password')

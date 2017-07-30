@@ -1,5 +1,11 @@
 import re
 
+from flask import session, make_response, jsonify
+
+from app.models import User
+
+from functools import wraps
+
 from smtplib import SMTP, SMTPException
 
 
@@ -26,3 +32,19 @@ def send_mail(recipient, password):
 
     except SMTPException:
         return False
+
+
+def login_required(func):
+    @wraps(func)
+    def check_login_status(*args, **kwargs):
+        if 'token' not in session and 'user' not in session:
+            return make_response(jsonify(dict(error='Unauthorised. Please login')), 403)
+
+        email = session.get('user')
+        token = session.get('token')
+        user = User.query.filter_by(email=email).first()
+        if not user.verify_token(token):
+            return make_response(jsonify(dict(error='Invalid session. Please login')), 403)
+
+        return func(*args, **kwargs)
+    return check_login_status
