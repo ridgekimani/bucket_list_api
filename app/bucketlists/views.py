@@ -12,7 +12,7 @@ class BucketListsApi(MethodView):
         pass
 
     @login_required
-    def post(self   ):
+    def post(self):
         pass
 
     @login_required
