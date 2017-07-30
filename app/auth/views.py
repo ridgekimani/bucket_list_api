@@ -2,9 +2,9 @@ import uuid
 
 from app.models import User
 
-from app.utils import validate_email
+from app.utils import validate_email, send_mail
 
-from flask import Blueprint, request, jsonify, make_response
+from flask import Blueprint, request, jsonify, make_response, session
 
 from flask.views import MethodView
 
@@ -36,6 +36,8 @@ class RegisterApi(MethodView):
         user = User(email=email, password=password).save()
 
         token = user.generate_token()
+        session['token'] = token
+        session['user'] = user.email
 
         return make_response(jsonify(dict(user=user.email, token=token.decode('ascii'))), 200)
 
@@ -61,9 +63,9 @@ class LoginApi(MethodView):
             return make_response(jsonify(dict(error='Incorrect password!')), 403)
 
         token = user.generate_token()
-
-        return make_response(jsonify(dict(email=user.email, password=str(user.password)),
-                                     token=token.decode('ascii')), 200)
+        session['token'] = token
+        session['user'] = user.email
+        return make_response(jsonify(dict(email=user.email, token=token.decode())), 200)
 
 
 class LogoutApi(MethodView):
@@ -84,11 +86,16 @@ class ResetPassword(MethodView):
         password = str(uuid.uuid4())[:8]
 
         user = User.query.filter_by(email=email).first()
+        status = send_mail(email, password)
+
+        if not status:
+            return make_response(jsonify(dict(error='Password was not reset. Please try resetting '
+                                                    'it again')), 500)
         user.password = password
         user.save()
 
-        return make_response(dict(success='New generated password is sent. Please make sure you '
-                                          'change!'), 201)
+        return make_response(jsonify(dict(success='An email has been sent with instructions for '
+                                                  'your new password')), 201)
 
 
 class ChangePassword(MethodView):
@@ -98,17 +105,27 @@ class ChangePassword(MethodView):
         new_password = request.form.get('new_password')
         confirm_new = request.form.get('confirm_password')
 
+        if not old_password:
+            return make_response(jsonify(dict(error='Please enter your old password')), 400)
+
+        if not any([confirm_new, new_password]):
+            return make_response(jsonify(dict(error='Please enter and confirm your new '
+                                                    'password')), 400)
+
         user = User.query.filter_by(email=email).first()
+
+        if not user:
+            return make_response(jsonify(dict(error='Email does not exist!')), 400)
 
         if not user.check_password(old_password):
             return make_response(jsonify(dict(error='Incorrect password!')), 403)
 
-        if len(new_password) < 6:
-            return make_response(jsonify(dict(error='Your password must be 6 characters long')),
-                                 400)
-
-        if new_password == confirm_new:
+        if new_password != confirm_new:
             return make_response(jsonify(dict(error='Passwords do not match!')), 400)
+
+        if len(new_password) < 6:
+            return make_response(jsonify(dict(error='Your password must be more than 6 characters '
+                                                    'long')), 400)
 
         user.password = new_password
         user.save()
