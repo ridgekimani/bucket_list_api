@@ -26,6 +26,8 @@ class User(db.Model):
     date_joined = db.Column(db.DateTime(), default=datetime.datetime.now())
     is_active = db.Column(db.Boolean(), default=True)
     last_login = db.Column(db.DateTime(), nullable=True)
+    buckets = db.relationship("Bucket", backref='user', lazy='dynamic')
+    activities = db.relationship("Activity", backref='user', lazy='dynamic')
 
     @hybrid_property
     def password(self):
@@ -85,9 +87,10 @@ class Bucket(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     bucket_name = db.Column(db.String(70), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
-    created_by = db.Column(db.DateTime(), default=datetime.datetime.now())
+    created = db.Column(db.DateTime(), default=datetime.datetime.now())
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     description = db.Column(db.String(100), nullable=False)
-    activities = db.relationship("Activity", back_populates="bucket")
+    activities = db.relationship("Activity", backref='bucket', lazy='dynamic')
 
     def get_id(self):
         return self.bucket_id
@@ -95,6 +98,7 @@ class Bucket(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+        return Bucket.query.filter_by(id=self.id).first()
 
 
 class Category(db.Model):
@@ -102,11 +106,12 @@ class Category(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     category_name = db.Column(db.String(70), nullable=False, unique=True)
-    category = db.relationship(Bucket)
+    category = db.relationship(Bucket, backref='category', lazy='dynamic')
 
     def save(self):
         db.session.add(self)
         db.session.commit()
+        return Category.query.filter_by(id=self.id).first()
 
 
 class Activity(db.Model):
@@ -114,9 +119,8 @@ class Activity(db.Model):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     description = db.Column(db.Text())
-    bucket_id_ = db.Column(db.Integer, db.ForeignKey('bucket.id'))
-    bucket = db.relationship("Bucket", back_populates="activities")
-    owner = db.Column(db.Integer, db.ForeignKey('user.id'))
+    bucket_id = db.Column(db.Integer, db.ForeignKey('bucket.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def get_id(self):
         return self.id
@@ -124,3 +128,4 @@ class Activity(db.Model):
     def save(self):
         db.session.add(self)
         db.session.commit()
+        return Activity.query.filter_by(id=self.id).first()
