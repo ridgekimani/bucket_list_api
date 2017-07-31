@@ -14,7 +14,8 @@ auth = Blueprint('auth', __name__, url_prefix='/auth')
 
 class RegisterApi(MethodView):
 
-    def post(self):
+    @staticmethod
+    def post():
         if not request.json:
             abort(400)
 
@@ -48,15 +49,15 @@ class RegisterApi(MethodView):
 
 
 class LoginApi(MethodView):
-    def post(self):
 
+    @staticmethod
+    def post():
         if not request.json:
             abort(400)
 
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
-
         if not email:
             return make_response(jsonify(dict(error='Please enter your email address!')), 400)
 
@@ -79,14 +80,18 @@ class LoginApi(MethodView):
 
 
 class LogoutApi(MethodView):
-    def post(self):
+
+    @staticmethod
+    def post():
         session.pop('user', None)
         session.pop('token', None)
         return make_response(jsonify(dict(success='Logout successful')), 200)
 
 
 class ResetPassword(MethodView):
-    def post(self):
+
+    @staticmethod
+    def post():
         if not request.json:
             abort(400)
 
@@ -115,7 +120,9 @@ class ResetPassword(MethodView):
 
 
 class ChangePassword(MethodView):
-    def post(self):
+
+    @staticmethod
+    def post():
         if not request.json:
             abort(400)
 
