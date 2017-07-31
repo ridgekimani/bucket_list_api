@@ -4,7 +4,7 @@ from app.models import User
 
 from app.utils import validate_email, send_mail
 
-from flask import Blueprint, request, jsonify, make_response, session
+from flask import Blueprint, request, jsonify, make_response, session, abort
 
 from flask.views import MethodView
 
@@ -15,8 +15,12 @@ auth = Blueprint('auth', __name__, url_prefix='/auth')
 class RegisterApi(MethodView):
 
     def post(self):
-        email = request.form.get('email')
-        password = request.form.get('password')
+        if not request.json:
+            abort(400)
+
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
 
         if not email:
             return make_response(jsonify(dict(error='Please enter your email address')), 400)
@@ -45,8 +49,13 @@ class RegisterApi(MethodView):
 
 class LoginApi(MethodView):
     def post(self):
-        email = request.form.get('email')
-        password = request.form.get('password')
+
+        if not request.json:
+            abort(400)
+
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
 
         if not email:
             return make_response(jsonify(dict(error='Please enter your email address!')), 400)
@@ -78,7 +87,11 @@ class LogoutApi(MethodView):
 
 class ResetPassword(MethodView):
     def post(self):
-        email = request.form.get('email')
+        if not request.json:
+            abort(400)
+
+        data = request.get_json()
+        email = data.get('email')
 
         if not email:
             return make_response(jsonify(dict(error='Please enter your email address')), 400)
@@ -103,10 +116,14 @@ class ResetPassword(MethodView):
 
 class ChangePassword(MethodView):
     def post(self):
-        email = request.form.get('email')
-        old_password = request.form.get('old_password')
-        new_password = request.form.get('new_password')
-        confirm_new = request.form.get('confirm_password')
+        if not request.json:
+            abort(400)
+
+        data = request.get_json()
+        email = data.get('email')
+        old_password = data.get('old_password')
+        new_password = data.get('new_password')
+        confirm_new = data.get('confirm_password')
 
         if not old_password:
             return make_response(jsonify(dict(error='Please enter your old password')), 400)
