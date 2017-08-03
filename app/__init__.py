@@ -4,7 +4,12 @@ from settings.settings import app_config
 
 app = Flask(__name__)
 
-app.config.from_object(app_config['development'])
+TESTING = True
+
+if TESTING:
+    app.config.from_object(app_config['testing'])
+else:
+    app.config.from_object(app_config['development'])
 
 from app.auth.views import auth
 from app.bucketlists.views import bucketlist

@@ -100,6 +100,28 @@ class Bucket(db.Model):
         db.session.commit()
         return Bucket.query.filter_by(id=self.id).first()
 
+    @staticmethod
+    def delete(bucket_id):
+        bucket = Bucket.query.filter_by(id=bucket_id).first()
+        db.session.delete(bucket)
+        db.session.commit()
+
+    @property
+    def serialize(self):
+        serialized_obj = dict(id=self.id, bucket_name=self.bucket_name,
+                              category=self.category.category_name,
+                              created=self.created, user=self.user.email,
+                              description=self.description)
+        return serialized_obj
+
+    @staticmethod
+    def exists(bucket_id, user_id):
+        bucket = Bucket.query.filter_by(id=bucket_id, user_id=user_id).first()
+        if bucket:
+            return True
+        else:
+            return False
+
 
 class Category(db.Model):
     __tablename__ = 'category'
@@ -112,6 +134,11 @@ class Category(db.Model):
         db.session.add(self)
         db.session.commit()
         return Category.query.filter_by(id=self.id).first()
+
+    @staticmethod
+    def exists(category_name):
+        category = Category.query.filter_by(category_name=category_name).first()
+        return category if category else Category(category_name=category_name).save()
 
 
 class Activity(db.Model):
@@ -129,3 +156,9 @@ class Activity(db.Model):
         db.session.add(self)
         db.session.commit()
         return Activity.query.filter_by(id=self.id).first()
+
+    @property
+    def serialize(self):
+        serialized_obj = dict(id=self.id, description=self.description, user=self.user.email,
+                              bucket=self.bucket.bucket_name)
+        return serialized_obj

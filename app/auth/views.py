@@ -2,9 +2,9 @@ import uuid
 
 from app.models import User
 
-from app.utils import validate_email, send_mail
+from app.utils import validate_email, send_mail, login_required
 
-from flask import Blueprint, request, jsonify, make_response, session, abort
+from flask import Blueprint, request, jsonify, make_response, session
 
 from flask.views import MethodView
 
@@ -14,10 +14,11 @@ auth = Blueprint('auth', __name__, url_prefix='/auth')
 
 class RegisterApi(MethodView):
 
-    @staticmethod
-    def post():
-        if not request.json:
-            abort(400)
+    def post(self):
+        if not request.get_json():
+            return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
+
+        print(request.get_json())
 
         data = request.get_json()
         email = data.get('email')
@@ -50,10 +51,9 @@ class RegisterApi(MethodView):
 
 class LoginApi(MethodView):
 
-    @staticmethod
-    def post():
-        if not request.json:
-            abort(400)
+    def post(self):
+        if not request.get_json():
+            return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
 
         data = request.get_json()
         email = data.get('email')
@@ -81,8 +81,7 @@ class LoginApi(MethodView):
 
 class LogoutApi(MethodView):
 
-    @staticmethod
-    def post():
+    def post(self):
         session.pop('user', None)
         session.pop('token', None)
         return make_response(jsonify(dict(success='Logout successful')), 200)
@@ -90,10 +89,9 @@ class LogoutApi(MethodView):
 
 class ResetPassword(MethodView):
 
-    @staticmethod
-    def post():
-        if not request.json:
-            abort(400)
+    def post(self):
+        if not request.get_json():
+            return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
 
         data = request.get_json()
         email = data.get('email')
@@ -121,10 +119,9 @@ class ResetPassword(MethodView):
 
 class ChangePassword(MethodView):
 
-    @staticmethod
-    def post():
-        if not request.json:
-            abort(400)
+    def post(self):
+        if not request.get_json():
+            return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
 
         data = request.get_json()
         email = data.get('email')
@@ -159,8 +156,21 @@ class ChangePassword(MethodView):
         return make_response(jsonify(dict(success='Password changed successfully')), 200)
 
 
+class DeleteAccount(MethodView):
+
+    @login_required
+    def delete(self):
+        email = session.get('user')
+        if not User.exists(email=email):
+            return make_response(jsonify(dict(error='User does not exist')), 400)
+
+        User.query.filter_by(email=email).delete()
+        return make_response(jsonify(dict(success="Account delete successfully")), 200)
+
+
 auth.add_url_rule('/register', view_func=RegisterApi.as_view('register-api'))
 auth.add_url_rule('/login', view_func=LoginApi.as_view('login-api'))
 auth.add_url_rule('/logout', view_func=LogoutApi.as_view('logout-api'))
 auth.add_url_rule('/reset_password', view_func=ResetPassword.as_view('reset-api'))
 auth.add_url_rule('/change_password', view_func=ChangePassword.as_view('change_password-api'))
+auth.add_url_rule('/delete_account', view_func=DeleteAccount.as_view('delete-account'))
