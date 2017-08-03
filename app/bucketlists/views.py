@@ -11,8 +11,12 @@ bucketlist = Blueprint('bucketlists', __name__, url_prefix='/bucketlists')
 
 
 class BucketListsApi(MethodView):
+
     @login_required
     def get(self, bucket_id=None):
+        limit = request.args.get('limit', None)
+        page = request.args.get("page", 1)
+
         email = session.get('user')
         user = User.query.filter_by(email=email).first()
 
@@ -20,8 +24,30 @@ class BucketListsApi(MethodView):
             bucket = Bucket.query.filter_by(user=user, id=bucket_id).first()
             return make_response(jsonify(bucket=bucket.serialize), 200)
 
-        buckets = Bucket.query.filter_by(user=user).all()
-        return make_response(jsonify(buckets=[bucket_.serialize for bucket_ in buckets]), 200)
+        if not all([limit, page]):
+            buckets = Bucket.query.filter_by(user=user).all()
+            return make_response(jsonify(buckets=[bucket_.serialize for bucket_ in buckets]), 200)
+
+        try:
+            limit = int(limit)
+            page = int(page)
+
+        except ValueError:
+            return make_response(jsonify(error='Please enter valid page or limit numbers'), 400)
+
+        page_buckets = Bucket.query.filter_by(user=user).paginate(page, limit, error_out=False)
+        next_page = ''
+        previous_page = ''
+        if page_buckets.has_next:
+            next_page = 'http://127.0.0.1:5000/bucketlists/?page=' + str(page+1) + '&limit=' + str(
+                limit)
+
+        if page_buckets.has_prev:
+            previous_page = 'http://127.0.0.1:5000/bucketlists/?page=' + str(page-1) + '&limit=' \
+                            + str(limit)
+
+        return make_response(jsonify(buckets=[bucket.serialize for bucket in page_buckets.items],
+                                     next_page=next_page, previous_page=previous_page))
 
     @login_required
     def post(self):
@@ -54,9 +80,9 @@ class BucketListsApi(MethodView):
         return make_response(jsonify(bucket=bucket.serialize), 200)
 
     @login_required
-    def put(self, bucket_id):
+    def put(self, bucket_id=None):
         if not bucket_id:
-            return make_response(jsonify(dict(error='Please specify the bucket')), 400)
+            return make_response(jsonify(dict(error='Please specify the bucket id')), 400)
 
         if not request.get_json():
             return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
@@ -92,34 +118,64 @@ class BucketListsApi(MethodView):
         return make_response(jsonify(bucket=bucket.serialize), 200)
 
     @login_required
-    def delete(self, bucket_id):
+    def delete(self, bucket_id=None):
         if not bucket_id:
-            return make_response(jsonify(dict(error='Please specify the bucket')), 400)
+            return make_response(jsonify(dict(error='Please specify the bucket id')), 400)
 
         email = session.get('user')
         user = User.query.filter_by(email=email).first()
         if Bucket.exists(bucket_id, user.id):
             Bucket.delete(bucket_id, user.id)
-            return make_response(jsonify(dict(success='Bucket deleted successfully')), 200)
+            buckets = Bucket.query.filter_by(user=user).all()
+            return make_response(jsonify(dict(buckets=[bucket_.serialize for bucket_ in buckets])),
+                                 200)
 
         return make_response(jsonify(dict(error='Bucket not found!')), 400)
 
 
 class ItemsApi(MethodView):
+
     @login_required
-    def get(self, bucket_id):
+    def get(self, bucket_id=None):
         if not bucket_id:
-            return make_response(jsonify(error='Please specify your bucket'), 400)
+            return make_response(jsonify(error='Please specify your bucket id'), 400)
+
+        limit = request.args.get('limit')
+        page = request.args.get('page', 1)
 
         email = session.get('user')
         user = User.query.filter_by(email=email).first()
-        items = Activity.query.filter_by(bucket_id=bucket_id, user=user).all()
-        return make_response(jsonify(activities=[item.serialize for item in items]))
+
+        if not all([limit, page]):
+            items = Activity.query.filter_by(bucket_id=bucket_id, user=user).all()
+            return make_response(jsonify(activities=[item.serialize for item in items]))
+
+        try:
+            limit = int(limit)
+            page = int(page)
+
+        except ValueError:
+            return make_response(jsonify(error='Please enter valid page or limit numbers'), 400)
+
+        page_items = Activity.query.filter_by(user=user, bucket_id=bucket_id)\
+            .paginate(page, limit, error_out=False)
+        next_page = ''
+        previous_page = ''
+        if page_items.has_next:
+            next_page = 'http://127.0.0.1:5000/bucketlists/'+str(bucket_id)+'/items?page=' + \
+                        str(page+1) + '&limit=' + str(limit)
+
+        if page_items.has_prev:
+            previous_page = 'http://127.0.0.1:5000/bucketlists/'+str(bucket_id)+'/items?page=' + \
+                             str(page-1) + '&limit=' + str(limit)
+
+        return make_response(jsonify(buckets=[bucket.serialize for bucket in page_items.items],
+                                     next_page=next_page, previous_page=previous_page))
 
     @login_required
-    def post(self, bucket_id):
+    def post(self, bucket_id=None):
         if not bucket_id:
-            return make_response(jsonify(error='Please specify your bucket'), 400)
+            return make_response(jsonify(error='Please specify your bucket id'), 400)
 
         email = session.get('user')
         user = User.query.filter_by(email=email).first()
@@ -136,9 +192,12 @@ class ItemsApi(MethodView):
         return make_response(jsonify(dict(item=activity.serialize)), 200)
 
     @login_required
-    def put(self, bucket_id, item_id):
-        if not all([bucket_id, item_id]):
-            return jsonify(dict(error='Please specify the bucket and the activity'), 400)
+    def put(self, bucket_id=None, item_id=None):
+        if not bucket_id:
+            return make_response(jsonify(error='Please specify the bucket id'), 400)
+
+        if not item_id:
+            return make_response(jsonify(error='Please specify your item id'), 400)
 
         email = session.get('user')
         user = User.query.filter_by(email=email).first()
@@ -171,7 +230,7 @@ class ItemsApi(MethodView):
 
         Activity.delete(bucket_id, item_id, user.id)
         items = Activity.query.filter_by(bucket_id=bucket_id, user_id=user.id).all()
-        return make_response(jsonify(activities=[item.serialize for item in items]))
+        return make_response(jsonify(items=[item.serialize for item in items]))
 
 
 bucketlist.add_url_rule('/', view_func=BucketListsApi.as_view('buckets'))
