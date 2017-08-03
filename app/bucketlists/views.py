@@ -1,5 +1,8 @@
-from app.utils import login_required
 from app.models import Bucket, Activity, User, Category
+
+from app.utils import login_required
+
+from datetime import datetime
 
 from flask import Blueprint, session, make_response, jsonify, request
 from flask.views import MethodView
@@ -84,6 +87,7 @@ class BucketListsApi(MethodView):
         bucket.description = description
         bucket.category_id = category.id
         bucket.bucket_name = bucket_name
+        bucket.updated = datetime.now()
         bucket.save()
         return make_response(jsonify(bucket=bucket.serialize), 200)
 
@@ -103,20 +107,71 @@ class BucketListsApi(MethodView):
 
 class ItemsApi(MethodView):
     @login_required
-    def get(self, bucket_id=None):
-        pass
+    def get(self, bucket_id):
+        if not bucket_id:
+            return make_response(jsonify(error='Please specify your bucket'), 400)
+
+        email = session.get('user')
+        user = User.query.filter_by(email=email).first()
+        items = Activity.query.filter_by(bucket_id=bucket_id, user=user).all()
+        return make_response(jsonify(activities=[item.serialize for item in items]))
 
     @login_required
     def post(self, bucket_id):
-        pass
+        if not bucket_id:
+            return make_response(jsonify(error='Please specify your bucket'), 400)
+
+        email = session.get('user')
+        user = User.query.filter_by(email=email).first()
+
+        if not Bucket.exists(bucket_id, user.id):
+            return make_response(jsonify(error='Bucket not found'), 400)
+
+        if not request.get_json():
+            return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
+
+        data = request.get_json()
+        description = data.get('description')
+        activity = Activity(description=description, bucket_id=bucket_id, user_id=user.id).save()
+        return make_response(jsonify(dict(item=activity.serialize)), 200)
 
     @login_required
     def put(self, bucket_id, item_id):
-        pass
+        if not all([bucket_id, item_id]):
+            return jsonify(dict(error='Please specify the bucket and the activity'), 400)
+
+        email = session.get('user')
+        user = User.query.filter_by(email=email).first()
+
+        if not Activity.exists(bucket_id, user.id, item_id):
+            return make_response(jsonify(dict(error='Activity not found')), 400)
+
+        if not request.get_json():
+            return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
+
+        data = request.get_json()
+        description = data.get('description')
+        activity = Activity.query.filter_by(bucket_id=bucket_id, id=item_id, user_id=user.id).first()
+        activity.description = description
+        activity.updated = datetime.now()
+        activity.save()
+        return make_response(jsonify(dict(item=activity.serialize)), 200)
 
     @login_required
     def delete(self, bucket_id, item_id):
-        pass
+        if not all([bucket_id, item_id]):
+            return jsonify(dict(error='Please specify the bucket and the activity'), 400)
+
+        email = session.get('user')
+        user = User.query.filter_by(email=email).first()
+
+        if not Activity.exists(bucket_id, user.id, item_id):
+            return make_response(jsonify(dict(error='Activity not found')), 400)
+
+        Activity.delete(bucket_id, item_id, user.id)
+        items = Activity.query.filter_by(bucket_id=bucket_id, user_id=user.id).all()
+        return make_response(jsonify(activities=[item.serialize for item in items]))
+
 
 bucketlist.add_url_rule('/', view_func=BucketListsApi.as_view('buckets'))
 bucketlist.add_url_rule('/<int:bucket_id>', view_func=BucketListsApi.as_view('bucket_specific'))

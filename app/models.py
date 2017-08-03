@@ -43,10 +43,7 @@ class User(db.Model):
     @staticmethod
     def exists(email):
         user = User.query.filter_by(email=email).first()
-        if user:
-            return True
-        else:
-            return False
+        return True if user else False
 
     def save(self):
         db.session.add(self)
@@ -88,6 +85,7 @@ class Bucket(db.Model):
     bucket_name = db.Column(db.String(70), nullable=False)
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
     created = db.Column(db.DateTime(), default=datetime.datetime.now())
+    updated = db.Column(db.DateTime(), default=datetime.datetime.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     description = db.Column(db.String(100), nullable=False)
     activities = db.relationship("Activity", backref='bucket', lazy='dynamic')
@@ -101,8 +99,8 @@ class Bucket(db.Model):
         return Bucket.query.filter_by(id=self.id).first()
 
     @staticmethod
-    def delete(bucket_id):
-        bucket = Bucket.query.filter_by(id=bucket_id).first()
+    def delete(bucket_id, user):
+        bucket = Bucket.query.filter_by(id=bucket_id, user=user).first()
         db.session.delete(bucket)
         db.session.commit()
 
@@ -111,16 +109,13 @@ class Bucket(db.Model):
         serialized_obj = dict(id=self.id, bucket_name=self.bucket_name,
                               category=self.category.category_name,
                               created=self.created, user=self.user.email,
-                              description=self.description)
+                              description=self.description, updated=self.updated)
         return serialized_obj
 
     @staticmethod
     def exists(bucket_id, user_id):
         bucket = Bucket.query.filter_by(id=bucket_id, user_id=user_id).first()
-        if bucket:
-            return True
-        else:
-            return False
+        return True if bucket else False
 
 
 class Category(db.Model):
@@ -148,6 +143,8 @@ class Activity(db.Model):
     description = db.Column(db.Text())
     bucket_id = db.Column(db.Integer, db.ForeignKey('bucket.id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    created = db.Column(db.DateTime(), default=datetime.datetime.now())
+    updated = db.Column(db.DateTime(), default=datetime.datetime.now())
 
     def get_id(self):
         return self.id
@@ -159,6 +156,20 @@ class Activity(db.Model):
 
     @property
     def serialize(self):
-        serialized_obj = dict(id=self.id, description=self.description, user=self.user.email,
-                              bucket=self.bucket.bucket_name)
+        serialized_obj = dict(activity_id=self.id, description=self.description,
+                              user=self.user.email, created=self.created,
+                              bucket_id=self.bucket.id, updated=self.updated)
         return serialized_obj
+
+    @staticmethod
+    def exists(bucket_id, user_id, activity_id):
+        activity = Activity.query.filter_by(bucket_id=bucket_id, user_id=user_id,
+                                            id=activity_id).first()
+        return True if activity else False
+
+    @staticmethod
+    def delete(bucket_id, activity_id, user_id):
+        activity = Activity.query.filter_by(bucket_id=bucket_id, user_id=user_id,
+                                            id=activity_id).first()
+        db.session.delete(activity)
+        db.session.commit()
