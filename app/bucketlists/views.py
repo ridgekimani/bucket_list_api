@@ -99,7 +99,7 @@ class BucketListsApi(MethodView):
         email = session.get('user')
         user = User.query.filter_by(email=email).first()
         if Bucket.exists(bucket_id, user.id):
-            Bucket.delete(bucket_id)
+            Bucket.delete(bucket_id, user.id)
             return make_response(jsonify(dict(success='Bucket deleted successfully')), 200)
 
         return make_response(jsonify(dict(error='Bucket not found!')), 400)
@@ -151,7 +151,8 @@ class ItemsApi(MethodView):
 
         data = request.get_json()
         description = data.get('description')
-        activity = Activity.query.filter_by(bucket_id=bucket_id, id=item_id, user_id=user.id).first()
+        activity = Activity.query.filter_by(bucket_id=bucket_id,
+                                            id=item_id, user_id=user.id).first()
         activity.description = description
         activity.updated = datetime.now()
         activity.save()
