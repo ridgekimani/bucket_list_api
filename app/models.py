@@ -26,8 +26,10 @@ class User(db.Model):
     date_joined = db.Column(db.DateTime(), default=datetime.datetime.now())
     is_active = db.Column(db.Boolean(), default=True)
     last_login = db.Column(db.DateTime(), nullable=True)
-    buckets = db.relationship("Bucket", backref='user', lazy='dynamic')
-    activities = db.relationship("Activity", backref='user', lazy='dynamic')
+    buckets = db.relationship("Bucket", backref='user', lazy='dynamic',
+                              cascade="delete, delete-orphan")
+    activities = db.relationship("Activity", backref='user', lazy='dynamic',
+                                 cascade="delete, delete-orphan")
 
     @hybrid_property
     def password(self):
@@ -84,7 +86,6 @@ class User(db.Model):
         db.session.commit()
 
 
-
 class Bucket(db.Model):
     __tablename__ = 'bucket'
 
@@ -95,7 +96,8 @@ class Bucket(db.Model):
     updated = db.Column(db.DateTime(), default=datetime.datetime.now())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     description = db.Column(db.String(100), nullable=False)
-    activities = db.relationship("Activity", backref='bucket', lazy='dynamic')
+    activities = db.relationship("Activity", backref='bucket', lazy='dynamic',
+                                 cascade="delete, delete-orphan")
 
     def get_id(self):
         return self.bucket_id
