@@ -164,7 +164,7 @@ class DeleteAccount(MethodView):
         if not User.exists(email=email):
             return make_response(jsonify(dict(error='User does not exist')), 400)
 
-        User.query.filter_by(email=email).delete()
+        User.delete(email)
         return make_response(jsonify(dict(success="Account delete successfully")), 200)
 
 

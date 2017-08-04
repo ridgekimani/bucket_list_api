@@ -77,6 +77,13 @@ class User(db.Model):
             return None
         return User.query.filter_by(id=data['id']).first()
 
+    @staticmethod
+    def delete(email):
+        user = User.query.filter_by(email=email).first()
+        db.session.delete(user)
+        db.session.commit()
+
+
 
 class Bucket(db.Model):
     __tablename__ = 'bucket'
