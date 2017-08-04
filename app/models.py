@@ -85,6 +85,12 @@ class User(db.Model):
         db.session.delete(user)
         db.session.commit()
 
+    def get_or_create(self):
+        if User.exists(self.email):
+            return User.query.filter_by(email=self.email).first()
+
+        return self.save()
+
 
 class Bucket(db.Model):
     __tablename__ = 'bucket'

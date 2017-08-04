@@ -13,7 +13,6 @@ auth = Blueprint('auth', __name__, url_prefix='/auth')
 
 
 class RegisterApi(MethodView):
-
     def post(self):
         if not request.get_json():
             return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
