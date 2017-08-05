@@ -1,6 +1,12 @@
 # BUCKET LIST API
+This is your day to day activity recording app as a restful web service used to perform CRUD 
+operations of Bucket and Items.
 
-## AUTH API's
+![python](https://img.shields.io/badge/python-3.6%203.5-green.svg)
+![flask](https://img.shields.io/badge/flask-0.12.2-blue.svg)
+ 
+
+## AUTH API endpoints
 ### 1. Register User 
 
 * URL:
@@ -179,13 +185,382 @@
    * content {"error": "Authentication required"}
    * content {"error": "Incorrect password"}
  
-## Bucketlist API's
+## Bucket API endpoints
 ### 1. Create Bucket
-### 2. Read Bucket(s)
-### 3. Update Bucket
-### 4. Delete Bucket
-### 5. Create Item
-### 6. Read Item(s)
-### 7. Update Item
-### 8. Delete Item 
+* URL:
+    * /api/v1/bucketlists/
+    
+* METHOD:
+    * POST
+    
+* DATA FORMAT
+    * application/json
+    
+* REQUIRED:
+    * bucket_name
+    * description
+ 
+* SUCCESS:
+   * status code 201
+   * content 
+        {
+            "bucket": {
+                "bucket_name": "bucket_name",
+                "created": "datetime object",
+                "description": "description",
+                "id": int(id),
+                "updated": "datetime object",
+                "user": "example user"
+            }
+        }
+   
+
+* ERROR:
+   * status code 400
+   * content 
+        * {"error": "Bad request. Please enter some data"}
+        * {"error": "Please enter the bucket name"}
+        * {"error": "Please describe your bucket"}
+   OR
+   * status code 403
+   * content
+        * {"error": "Unauthorized. Please login"}
+
+### 2. Read Bucket
+* URL:
+    * /api/v1/bucketlists/?[params]
+    * /api/v1/bucketlists/{bucket_id}
+    
+* METHOD:
+    * GET
+    
+* DATA FORMAT
+    * application/json
+    
+* OPTIONAL:
+    * bucket_id
+    * limit
+    * page
+ 
+* SUCCESS:
+   * status code 201
+   * content 
+   
+   
+        {
+            "bucket": {
+                "bucket_name": "bucket_name",
+                "created": "datetime object",
+                "description": "description",
+                "id": int(id),
+                "updated": "datetime object",
+                "user": "example user"
+            }
+        }
         
+   OR
+   
+   * content
+   
+   
+       {
+            buckets": [
+                {
+                    "bucket_name": "bucket_name",
+                    "created": "datetime object",
+                    "description": "description",
+                    "id": int(id),
+                    "updated": "datetime object",
+                    "user": "example user"
+                },
+                {
+                    "bucket_name": "bucket_name",
+                    "created": "datetime object",
+                    "description": "description",
+                    "id": int(id),
+                    "updated": "datetime object",
+                    "user": "example user"
+                }
+            ]
+       }
+
+* ERROR:
+   * status code 400
+   * content
+    {"error": "Please enter valid limit and page numbers"}
+     
+   OR
+   * status code 403
+   * content
+        * {"error": "Unauthorized. Please login"}
+        
+### 3. Update Bucket
+* URL:
+    * /api/v1/bucketlists/{bucket_id}
+    
+* METHOD:
+    * PUT
+    
+* DATA FORMAT
+    * application/json
+    
+* REQUIRED:
+    * bucket_name
+    * description
+ 
+* SUCCESS:
+   * status code 200
+   * content
+   
+    
+        {
+            "bucket": {
+                "bucket_name": "bucket_name",
+                "created": "datetime object",
+                "description": "description",
+                "id": int(id),
+                "updated": "datetime object",
+                "user": "example user"
+            }
+        }
+   
+
+* ERROR:
+   * status code 400
+   * content
+        * {"error": "Please specify your bucket id" 
+        * {"error": "Bad request. Please enter some data"}
+        * {"error": "Please enter the bucket name"}
+        * {"error": "Please describe your bucket"}
+        * {"error": "Bucket not found"}
+   OR
+   * status code 403
+   * content
+        * {"error": "Unauthorized. Please login"}
+
+### 4. Delete Bucket
+* URL:
+    * /api/v1/bucketlists/{bucket_id}
+    
+* METHOD:
+    * DELETE
+    
+* DATA FORMAT
+    * application/json
+    
+* REQUIRED:
+    * password
+    
+* SUCCESS:
+    * status code 200
+    * content = 
+    
+    
+    {
+        "buckets": 
+        [
+            {bucket1},
+            {bucket2}
+        ]
+    }
+        where bucket 1 and bucket 2 are json objects
+    
+* ERROR:
+    * status code 400
+    
+    OR
+    * status code 403
+    * content
+        * {"error": "Unauthorized. Please login"}
+ 
+ 
+## Item API endpoints
+### 1. Create Item
+* URL:
+    * /api/v1/bucketlists/{bucket_id}
+    
+* METHOD:
+    * POST
+    
+* DATA FORMAT
+    * application/json
+    
+* REQUIRED:
+    * description
+ 
+* SUCCESS:
+   * status code 201
+   * content 
+   
+   
+        {
+            "activity": {
+                "description": "activity description",
+                "created": "datetime object",
+                "id": int(id),
+                "bucket_id": int(id)
+                "updated": "datetime object",
+                "user": "example user"
+            }
+        }
+   
+
+* ERROR:
+   * status code 400
+   * content 
+        * {"error": "Bad request. Please enter some data"}
+        * {"error": "Bucket not found"}
+        * {"error": "Please specify your bucket id"}
+        * {"error": "Please describe your activity"}
+   OR
+   * status code 403
+   * content
+        * {"error": "Unauthorized. Please login"}
+
+### 2. Read Item
+* URL:
+    * /api/v1/bucketlists/{bucket_id}/items/{item_id}
+    
+* METHOD:
+    * GET
+    
+* DATA FORMAT
+    * application/json
+    
+* OPTIONAL:
+    * item_id
+    * limit
+    * page
+ 
+* SUCCESS:
+   * status code 201
+   * content
+   
+    
+        {
+            "activity": {
+                "created": "datetime object",
+                "description": "description",
+                "id": int(id),
+                "bucket_id": "bucket id"
+                "updated": "datetime object",
+                "user": "example user"
+            }
+        }
+        
+   OR
+   
+   * content
+    
+    
+    {
+    activities": [
+            {
+                "created": "datetime object",
+                "description": "description",
+                "id": int(id),
+                "bucket_id": "bucket id"
+                "updated": "datetime object",
+                "user": "example user"
+            },
+            {
+                "created": "datetime object",
+                "description": "description",
+                "id": int(id),
+                "bucket_id": "bucket id"
+                "updated": "datetime object",
+                "user": "example user"
+            }
+    ]
+    }
+   
+
+* ERROR:
+   * status code 400
+   * content
+    * {"error": "Please enter valid limit and page numbers"}
+     
+   OR
+   * status code 403
+   * content
+        * {"error": "Unauthorized. Please login"}
+        
+### 3. Update Item
+* URL:
+    * /api/v1/bucketlists/{bucket_id}/items/{item_id}
+    
+* METHOD:
+    * PUT
+    
+* DATA FORMAT
+    * application/json
+    
+* REQUIRED:
+    * bucket_id
+    * item_id
+    * description
+ 
+* SUCCESS:
+   * status code 200
+   * content
+   
+    
+        {
+            "activity": {
+                "created": "datetime object",
+                "description": "description",
+                "id": int(id),
+                "bucket_id": int(id)
+                "updated": "datetime object",
+                "user": "example user"
+            }
+        }
+   
+
+* ERROR:
+   * status code 400
+   * content
+        * {"error": "Please specify your bucket id" 
+        * {"error": "Bad request. Please enter some data"}
+        * {"error": "Please describe your activity"}
+        * {"error": "Bucket not found"}
+   OR
+   * status code 403
+   * content
+        * {"error": "Unauthorized. Please login"}
+
+### 4. Delete Item
+* URL:
+    * /api/v1/bucketlists/{bucket_id}/items/{item_id}
+    
+* METHOD:
+    * DELETE
+    
+* DATA FORMAT
+    * application/json
+    
+* REQUIRED:
+    * password
+    
+* SUCCESS:
+    * status code 200
+    * content 
+    
+    
+        {
+        "activities": 
+            [
+                {activity1},
+                {activity2}
+            ]
+        }
+    
+* ERROR:
+    * status code 400
+        * {"error": "Activity not found"}
+    
+    OR
+    * status code 403
+    * content
+        * {"error": "Unauthorized. Please login"}
+  
