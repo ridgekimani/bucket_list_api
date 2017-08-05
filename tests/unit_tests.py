@@ -91,10 +91,10 @@ class TestResetPassword(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
         db.create_all()
-        User(email='ridge.kimani@andela.com', password='test_password').get_or_create()
+        User(email='ridgekimani@yahoo.com', password='test_password').get_or_create()
 
     def test_reset_email(self):
-        data = dict(email='ridge.kimani@andela.com')
+        data = dict(email='ridgekimani@yahoo.com')
         response = self.app.post('/api/v1/auth/reset_password', data=json.dumps(data),
                                  content_type='application/json')
         assert response.status_code == 201
