@@ -184,6 +184,10 @@ class ItemsApi(MethodView):
 
         data = request.get_json()
         description = data.get('description')
+
+        if not description:
+            return make_response(jsonify(dict(error='Please describe your activity')), 40)
+
         activity = Activity(description=description, bucket_id=bucket_id, user_id=user.id).save()
         return make_response(jsonify(dict(item=activity.serialize)), 201)
 
