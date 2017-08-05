@@ -5,6 +5,7 @@ from flask import Blueprint, make_response, jsonify, request
 search = Blueprint('search', __name__, url_prefix='/search')
 
 
+# TODO improve the search logic
 @search.route('/', methods=['GET'])
 def search_api():
     query = request.args.get('q')

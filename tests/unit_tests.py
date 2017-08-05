@@ -314,5 +314,22 @@ class TestItemActivityTestCases(unittest.TestCase):
         db.drop_all()
 
 
+class TestSearchApi(unittest.TestCase):
+    def setUp(self):
+        self.app = app.test_client()
+        db.create_all()
+        self.user = User(email='test@email.com', password='test_password').get_or_create()
+        self.bucket = Bucket(bucket_name='Test', user_id=self.user.id, description='Test').save()
+
+    def test_search(self):
+        Activity(description='Test desc', user=self.user, bucket_id=self.bucket.id).save()
+        response = self.app.get('/search/?q=test')
+        assert response.status_code == 200
+
+    def tearDown(self):
+        User.drop_all()
+        db.session.remove()
+        db.drop_all()
+
 if __name__ == '__main__':
     unittest.main()
