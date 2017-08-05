@@ -4,7 +4,7 @@ import unittest
 
 from app import app, app_config
 
-from app.models import db, User, Bucket
+from app.models import db, User, Bucket, Activity
 
 app.config.from_object(app_config['testing'])
 
@@ -135,24 +135,24 @@ class TestChangePassword(unittest.TestCase):
         data = json.dumps(dict(old_password='test_pass', new_password='password',
                                confirm_password='password'))
         res = self.app.put('/api/v1/auth/change_password', data=data,
-                            content_type='application/json')
+                           content_type='application/json')
         assert res.status_code == 403
 
     def test_with_missing_details(self):
         data = json.dumps(dict(old_password='test_password', new_password='password'))
         res = self.app.put('/api/v1/auth/change_password', data=data,
-                            content_type='application/json')
+                           content_type='application/json')
         assert res.status_code == 400
         data = json.dumps(dict(old_password='test_password', confirm_password='password'))
         res = self.app.put('/api/v1/auth/change_password', data=data,
-                            content_type='application/json')
+                           content_type='application/json')
         assert res.status_code == 400
 
     def test_password_validators(self):
         data = json.dumps(dict(old_password='test_password', new_password='pass',
                                confirm_password='pass'))
         res = self.app.put('/api/v1/auth/change_password', data=data,
-                            content_type='application/json')
+                           content_type='application/json')
         assert res.status_code == 400
 
     def tearDown(self):
@@ -258,25 +258,60 @@ class TestBucketListTestCases(unittest.TestCase):
 
 class TestItemActivityTestCases(unittest.TestCase):
     def setUp(self):
-        pass
+        self.app = app.test_client()
+        db.create_all()
+        self.user = User(email='test@email.com', password='test_password').get_or_create()
+        self.bucket = Bucket(bucket_name='Test', user_id=self.user.id, description='Test').save()
+
+        with self.app as app_:
+            with app_.session_transaction() as sess:
+                sess['user'] = self.user.email
 
     def test_add_activity(self):
-        pass
+        data = json.dumps(dict(description='test_description'))
+        response = self.app.post('/api/v1/bucketlists/' + str(self.bucket.id) + '/items',
+                                 data=data, content_type='application/json')
+
+        assert response.status_code == 201
+
+    def test_add_activity_with_no_data(self):
+        response = self.app.post('/api/v1/bucketlists/' + str(self.bucket.id) + '/items',
+                                 content_type='application/json')
+        assert response.status_code == 400
 
     def test_get_activities(self):
-        pass
+        response = self.app.get('/api/v1/bucketlists/' + str(self.bucket.id) + '/items',
+                                content_type='application/json')
+        assert response.status_code == 200
 
     def test_get_specific_activity(self):
-        pass
+        act = Activity(description='Test desc', user=self.user, bucket_id=self.bucket.id).save()
+        response = self.app.get('/api/v1/bucketlists/' + str(self.bucket.id) + '/items/' + str(
+            act.id), content_type='application/json')
+        assert response.status_code == 200
 
-    def test_get_activity_with_limits(self):
-        pass
+    def test_get_activities_with_limits(self):
+        response = self.app.get('/api/v1/bucketlists/' + str(self.bucket.id)
+                                + '/items' + '?page=1&limit=1', content_type='application/json')
+        assert response.status_code == 200
 
     def test_update_activity(self):
-        pass
+        act = Activity(description='Test desc', user=self.user, bucket_id=self.bucket.id).save()
+        data = json.dumps(dict(description='Update description'))
+        response = self.app.put('/api/v1/bucketlists/' + str(self.bucket.id) + '/items/' + str(
+            act.id), content_type='application/json', data=data)
+        assert response.status_code == 200
 
     def test_delete_activity(self):
-        pass
+        act = Activity(description='Test desc', user=self.user, bucket_id=self.bucket.id).save()
+        response = self.app.delete('/api/v1/bucketlists/' + str(self.bucket.id) + '/items/' + str(
+            act.id), content_type='application/json')
+        assert response.status_code == 200
+
+    def tearDown(self):
+        User.drop_all()
+        db.session.remove()
+        db.drop_all()
 
 
 if __name__ == '__main__':
