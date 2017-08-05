@@ -268,7 +268,7 @@ class TestBucketListTestCases(unittest.TestCase):
         db.drop_all()
 
 
-class TestItemActivityTestCases(unittest.TestCase):
+class TestItemTestCases(unittest.TestCase):
     def setUp(self):
         self.app = app.test_client()
         db.create_all()
@@ -313,6 +313,13 @@ class TestItemActivityTestCases(unittest.TestCase):
         response = self.app.put('/api/v1/bucketlists/' + str(self.bucket.id) + '/items/' + str(
             act.id), content_type='application/json', data=data)
         assert response.status_code == 200
+
+    def test_update_activity_with_no_description(self):
+        act = Activity(description='Test desc', user=self.user, bucket_id=self.bucket.id).save()
+        data = json.dumps(dict(x='y'))
+        response = self.app.put('/api/v1/bucketlists/' + str(self.bucket.id) + '/items/' + str(
+            act.id), content_type='application/json', data=data)
+        assert response.status_code == 400
 
     def test_delete_activity(self):
         act = Activity(description='Test desc', user=self.user, bucket_id=self.bucket.id).save()

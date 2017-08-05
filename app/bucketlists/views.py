@@ -210,6 +210,10 @@ class ItemsApi(MethodView):
 
         data = request.get_json()
         description = data.get('description')
+
+        if not description:
+            return make_response(jsonify(dict(error='Please describe your activity')), 400)
+
         activity = Activity.query.filter_by(bucket_id=bucket_id,
                                             id=item_id, user_id=user.id).first()
         activity.description = description
