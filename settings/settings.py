@@ -1,3 +1,9 @@
+import os
+import sys
+
+
+BASEDIR = os.path.abspath(os.path.dirname(__file__))
+
 
 class Config(object):
     DEBUG = False
@@ -18,9 +24,7 @@ class DevelopmentConfig(Config):
 
 
 class TestingConfig(Config):
-    SQLALCHEMY_DATABASE_URI = "postgresql://bucket_list:bucket_list@localhost:5432" \
-                              "/test_bucket_list"
-
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'test.db')
     TESTING = True
 
 
