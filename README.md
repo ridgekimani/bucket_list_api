@@ -1,6 +1,6 @@
 # BUCKET LIST API
 
-##AUTH API's
+## AUTH API's
 ### 1. Register User 
 
 * URL:
@@ -179,13 +179,13 @@
    * content {"error": "Authentication required"}
    * content {"error": "Incorrect password"}
  
-##Bucketlist API's
-###1. Create Bucket
-###2. Read Bucket(s)
-###3. Update Bucket
-###4. Delete Bucket
-###5. Create Item
-###6. Read Item(s)
-###7. Update Item
-###8. Delete Item 
+## Bucketlist API's
+### 1. Create Bucket
+### 2. Read Bucket(s)
+### 3. Update Bucket
+### 4. Delete Bucket
+### 5. Create Item
+### 6. Read Item(s)
+### 7. Update Item
+### 8. Delete Item 
         
