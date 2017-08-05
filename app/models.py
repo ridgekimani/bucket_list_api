@@ -115,14 +115,13 @@ class Bucket(db.Model):
 
     @staticmethod
     def delete(bucket_id, user):
-        bucket = Bucket.query.filter_by(id=bucket_id, user=user).first()
+        bucket = Bucket.query.filter_by(id=bucket_id, user_id=user).first()
         db.session.delete(bucket)
         db.session.commit()
 
     @property
     def serialize(self):
         serialized_obj = dict(id=self.id, bucket_name=self.bucket_name,
-                              category=self.category.category_name,
                               created=self.created, user=self.user.email,
                               description=self.description, updated=self.updated)
         return serialized_obj
