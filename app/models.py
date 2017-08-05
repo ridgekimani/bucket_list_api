@@ -65,7 +65,7 @@ class User(db.Model):
         return self.user_id
 
     def generate_token(self):
-        key = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'], expires_in=1800)
+        key = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'])
         return key.dumps(dict(id=self.id))
 
     @classmethod
