@@ -128,15 +128,19 @@ class BucketListsApi(MethodView):
 class ItemsApi(MethodView):
 
     @login_required
-    def get(self, bucket_id=None):
+    def get(self, bucket_id=None, item_id=None):
+        email = session.get('user')
+        user = User.query.filter_by(email=email).first()
+
         if not bucket_id:
             return make_response(jsonify(error='Please specify your bucket id'), 400)
 
+        if item_id and bucket_id:
+            act = Activity.query.filter_by(bucket_id=bucket_id, user=user, id=item_id).first()
+            return make_response(jsonify(activity=act.serialize))
+
         limit = request.args.get('limit')
         page = request.args.get('page', 1)
-
-        email = session.get('user')
-        user = User.query.filter_by(email=email).first()
 
         if not all([limit, page]):
             items = Activity.query.filter_by(bucket_id=bucket_id, user=user).all()
@@ -181,7 +185,7 @@ class ItemsApi(MethodView):
         data = request.get_json()
         description = data.get('description')
         activity = Activity(description=description, bucket_id=bucket_id, user_id=user.id).save()
-        return make_response(jsonify(dict(item=activity.serialize)), 200)
+        return make_response(jsonify(dict(item=activity.serialize)), 201)
 
     @login_required
     def put(self, bucket_id=None, item_id=None):
