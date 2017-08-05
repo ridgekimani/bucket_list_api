@@ -1,7 +1,8 @@
 # BUCKET LIST API
 This is your day to day activity recording app as a restful web service used to perform CRUD 
 operations of Bucket and Items.
-
+[![Build Status](https://travis-ci.org/ridgekimani/bucket_list_api.svg?branch=master)](https://travis-ci.org/ridgekimani/bucket_list_api)
+[![Coverage Status](https://coveralls.io/repos/github/ridgekimani/bucket_list_api/badge.svg?branch=master)](https://coveralls.io/github/ridgekimani/bucket_list_api?branch=master)
 ![python](https://img.shields.io/badge/python-3.6%203.5-green.svg)
 ![flask](https://img.shields.io/badge/flask-0.12.2-blue.svg)
  
@@ -203,16 +204,18 @@ operations of Bucket and Items.
 * SUCCESS:
    * status code 201
    * content 
-        {
-            "bucket": {
-                "bucket_name": "bucket_name",
-                "created": "datetime object",
-                "description": "description",
-                "id": int(id),
-                "updated": "datetime object",
-                "user": "example user"
-            }
-        }
+        
+        
+         {
+             "bucket": {
+                 "bucket_name": "bucket_name",
+                 "created": "datetime object",
+                 "description": "description",
+                 "id": int(id),
+                 "updated": "datetime object",
+                 "user": "example user"
+             }
+         }
    
 
 * ERROR:
@@ -247,42 +250,42 @@ operations of Bucket and Items.
    * content 
    
    
-        {
-            "bucket": {
-                "bucket_name": "bucket_name",
-                "created": "datetime object",
-                "description": "description",
-                "id": int(id),
-                "updated": "datetime object",
-                "user": "example user"
-            }
-        }
+         {
+             "bucket": {
+                 "bucket_name": "bucket_name",
+                 "created": "datetime object",
+                 "description": "description",
+                 "id": int(id),
+                 "updated": "datetime object",
+                 "user": "example user"
+             }
+         }
         
    OR
    
    * content
    
    
-       {
-            buckets": [
-                {
-                    "bucket_name": "bucket_name",
-                    "created": "datetime object",
-                    "description": "description",
-                    "id": int(id),
-                    "updated": "datetime object",
-                    "user": "example user"
-                },
-                {
-                    "bucket_name": "bucket_name",
-                    "created": "datetime object",
-                    "description": "description",
-                    "id": int(id),
-                    "updated": "datetime object",
-                    "user": "example user"
-                }
-            ]
-       }
+         {
+              buckets": [
+                  {
+                      "bucket_name": "bucket_name",
+                      "created": "datetime object",
+                      "description": "description",
+                      "id": int(id),
+                      "updated": "datetime object",
+                      "user": "example user"
+                  },
+                  {
+                      "bucket_name": "bucket_name",
+                      "created": "datetime object",
+                      "description": "description",
+                      "id": int(id),
+                      "updated": "datetime object",
+                      "user": "example user"
+                  }
+              ]
+         }
 
 * ERROR:
    * status code 400
@@ -313,16 +316,16 @@ operations of Bucket and Items.
    * content
    
     
-        {
-            "bucket": {
-                "bucket_name": "bucket_name",
-                "created": "datetime object",
-                "description": "description",
-                "id": int(id),
-                "updated": "datetime object",
-                "user": "example user"
-            }
-        }
+         {
+             "bucket": {
+                 "bucket_name": "bucket_name",
+                 "created": "datetime object",
+                 "description": "description",
+                 "id": int(id),
+                 "updated": "datetime object",
+                 "user": "example user"
+             }
+         }
    
 
 * ERROR:
@@ -356,15 +359,15 @@ operations of Bucket and Items.
     * content = 
     
     
-    {
-        "buckets": 
-        [
-            {bucket1},
-            {bucket2}
-        ]
-    }
-        where bucket 1 and bucket 2 are json objects
-    
+          {
+              "buckets": 
+              [
+                  {bucket1},
+                  {bucket2}
+              ]
+          }
+              where bucket 1 and bucket 2 are json objects
+
 * ERROR:
     * status code 400
     
@@ -393,17 +396,17 @@ operations of Bucket and Items.
    * content 
    
    
-        {
-            "activity": {
-                "description": "activity description",
-                "created": "datetime object",
-                "id": int(id),
-                "bucket_id": int(id)
-                "updated": "datetime object",
-                "user": "example user"
-            }
-        }
-   
+         {
+             "activity": {
+                 "description": "activity description",
+                 "created": "datetime object",
+                 "id": int(id),
+                 "bucket_id": int(id)
+                 "updated": "datetime object",
+                 "user": "example user"
+             }
+         }
+
 
 * ERROR:
    * status code 400
@@ -437,42 +440,42 @@ operations of Bucket and Items.
    * content
    
     
-        {
-            "activity": {
-                "created": "datetime object",
-                "description": "description",
-                "id": int(id),
-                "bucket_id": "bucket id"
-                "updated": "datetime object",
-                "user": "example user"
-            }
-        }
+         {
+             "activity": {
+                 "created": "datetime object",
+                 "description": "description",
+                 "id": int(id),
+                 "bucket_id": "bucket id"
+                 "updated": "datetime object",
+                 "user": "example user"
+             }
+         }
         
    OR
    
    * content
     
     
-    {
-    activities": [
-            {
-                "created": "datetime object",
-                "description": "description",
-                "id": int(id),
-                "bucket_id": "bucket id"
-                "updated": "datetime object",
-                "user": "example user"
-            },
-            {
-                "created": "datetime object",
-                "description": "description",
-                "id": int(id),
-                "bucket_id": "bucket id"
-                "updated": "datetime object",
-                "user": "example user"
-            }
-    ]
-    }
+         {
+         activities": [
+                 {
+                     "created": "datetime object",
+                     "description": "description",
+                     "id": int(id),
+                     "bucket_id": "bucket id"
+                     "updated": "datetime object",
+                     "user": "example user"
+                 },
+                 {
+                     "created": "datetime object",
+                     "description": "description",
+                     "id": int(id),
+                     "bucket_id": "bucket id"
+                     "updated": "datetime object",
+                     "user": "example user"
+                 }
+         ]
+         }
    
 
 * ERROR:
@@ -505,17 +508,17 @@ operations of Bucket and Items.
    * content
    
     
-        {
-            "activity": {
-                "created": "datetime object",
-                "description": "description",
-                "id": int(id),
-                "bucket_id": int(id)
-                "updated": "datetime object",
-                "user": "example user"
-            }
-        }
-   
+          {
+              "activity": {
+                  "created": "datetime object",
+                  "description": "description",
+                  "id": int(id),
+                  "bucket_id": int(id)
+                  "updated": "datetime object",
+                  "user": "example user"
+              }
+          }
+
 
 * ERROR:
    * status code 400
@@ -547,13 +550,13 @@ operations of Bucket and Items.
     * content 
     
     
-        {
-        "activities": 
-            [
-                {activity1},
-                {activity2}
-            ]
-        }
+          {
+          "activities": 
+              [
+                  {activity1},
+                  {activity2}
+              ]
+          }
     
 * ERROR:
     * status code 400
