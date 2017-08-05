@@ -11,8 +11,8 @@ def search_api():
     if not query:
         return make_response(jsonify(error='Please enter search parameters'), 400)
 
-    bucket_lists = Bucket.query.filter_by(bucket_name=str(query).capitalize()).all()
-    activities = Activity.query.filter_by(description=str(query).capitalize()).all()
+    bucket_lists = Bucket.query.filter_by(bucket_name=query).all()
+    activities = Activity.query.filter_by(description=query).all()
     bucket_obj = [bucket.serialize for bucket in bucket_lists]
     activity_obj = [activity.serialize for activity in activities]
     return make_response(jsonify(buckets=bucket_obj, activities=activity_obj))
