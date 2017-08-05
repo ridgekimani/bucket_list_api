@@ -162,8 +162,18 @@ class DeleteAccount(MethodView):
     @login_required
     def delete(self):
         email = session.get('user')
+        if not request.get_json():
+            return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
+
+        password = request.get_json().get('password')
+
         if not User.exists(email=email):
             return make_response(jsonify(dict(error='User does not exist')), 400)
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user.check_password(password):
+            return make_response(jsonify(dict(error='Incorrect password')), 403)
 
         User.delete(email)
         return make_response(jsonify(dict(success="Account deleted successfully")), 200)

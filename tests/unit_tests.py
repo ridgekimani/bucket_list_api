@@ -171,8 +171,20 @@ class TestDeleteAccount(unittest.TestCase):
                 sess['user'] = user.email
 
     def test_delete_account(self):
-        response = self.app.delete('/api/v1/auth/delete_account')
+        data = json.dumps(dict(password='test_password'))
+        response = self.app.delete('/api/v1/auth/delete_account', data=data,
+                                   content_type='application/json')
         assert response.status_code == 200
+
+    def test_delete_account_with_wrong_credentials(self):
+        data = json.dumps(dict(password='test_pass'))
+        response = self.app.delete('/api/v1/auth/delete_account',
+                                   content_type='application/json', data=data)
+        assert response.status_code == 403
+
+    def test_delete_account_with_no_data(self):
+        response = self.app.delete('/api/v1/auth/delete_account', content_type='application/json')
+        assert response.status_code == 400
 
     def tearDown(self):
         User.drop_all()
