@@ -68,8 +68,8 @@ class User(db.Model):
         key = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'], expires_in=1800)
         return key.dumps(dict(id=self.id))
 
-    @staticmethod
-    def verify_token(token):
+    @classmethod
+    def verify_token(cls, token):
         key = TimedJSONWebSignatureSerializer(app.config['SECRET_KEY'])
 
         try:
@@ -77,7 +77,7 @@ class User(db.Model):
 
         except (SignatureExpired, BadSignature):
             return None
-        return User.query.filter_by(id=data['id']).first()
+        return cls.query.filter_by(id=data['id']).first()
 
     @staticmethod
     def delete(email):

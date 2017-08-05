@@ -1,6 +1,6 @@
 import re
 
-from flask import session, make_response, jsonify
+from flask import session, make_response, jsonify, request
 
 from app.models import User
 
@@ -37,14 +37,16 @@ def send_mail(recipient, password):
 def login_required(func):
     @wraps(func)
     def check_login_status(*args, **kwargs):
-        if 'token' not in session and 'user' not in session:
-            return make_response(jsonify(dict(error='Unauthorised. Please login')), 403)
+        if 'token' in request.headers or 'user' in session:
+            email = session.get('user')
+            token = request.headers.get('token')
+            if token and not email:
+                if not User.verify_token(token):
+                    return make_response(jsonify(dict(error='Invalid session. Please login')), 403)
 
-        email = session.get('user')
-        token = session.get('token')
-        user = User.query.filter_by(email=email).first()
-        if not user.verify_token(token):
-            return make_response(jsonify(dict(error='Invalid session. Please login')), 403)
-
+            if email and not token:
+                User.query.filter_by(email=email).first()
+        else:
+            return make_response(jsonify(error='Unauthorised. Please login'), 403)
         return func(*args, **kwargs)
     return check_login_status

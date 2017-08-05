@@ -9,7 +9,7 @@ from flask import Blueprint, request, jsonify, make_response, session
 from flask.views import MethodView
 
 
-auth = Blueprint('auth', __name__, url_prefix='/auth')
+auth = Blueprint('auth', __name__, url_prefix='/api/v1/auth')
 
 
 class RegisterApi(MethodView):
@@ -40,10 +40,10 @@ class RegisterApi(MethodView):
         user = User(email=email, password=password).save()
 
         token = user.generate_token()
-        session['token'] = token
         session['user'] = user.email
-
-        return make_response(jsonify(dict(user=user.email, token=token.decode('ascii'))), 201)
+        response = make_response(jsonify(dict(success='Account created successfully')), 201)
+        response.headers['token'] = token
+        return response
 
 
 class LoginApi(MethodView):
@@ -71,9 +71,10 @@ class LoginApi(MethodView):
             return make_response(jsonify(dict(error='Incorrect password!')), 403)
 
         token = user.generate_token()
-        session['token'] = token
         session['user'] = user.email
-        return make_response(jsonify(dict(email=user.email, token=token.decode())), 200)
+        response = make_response(jsonify(dict(success='Authenticated successfully'), 200))
+        response.headers['token'] = token
+        return response
 
 
 class LogoutApi(MethodView):
@@ -117,7 +118,7 @@ class ResetPassword(MethodView):
 class ChangePassword(MethodView):
 
     @login_required
-    def post(self):
+    def put(self):
         if not request.get_json():
             return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
 
@@ -163,7 +164,7 @@ class DeleteAccount(MethodView):
             return make_response(jsonify(dict(error='User does not exist')), 400)
 
         User.delete(email)
-        return make_response(jsonify(dict(success="Account delete successfully")), 200)
+        return make_response(jsonify(dict(success="Account deleted successfully")), 200)
 
 
 auth.add_url_rule('/register', view_func=RegisterApi.as_view('register-api'))

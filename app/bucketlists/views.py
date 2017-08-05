@@ -7,7 +7,7 @@ from datetime import datetime
 from flask import Blueprint, session, make_response, jsonify, request
 from flask.views import MethodView
 
-bucketlist = Blueprint('bucketlists', __name__, url_prefix='/bucketlists')
+bucketlist = Blueprint('bucketlists', __name__, url_prefix='/api/v1/bucketlists')
 
 
 class BucketListsApi(MethodView):
