@@ -17,8 +17,6 @@ class RegisterApi(MethodView):
         if not request.get_json():
             return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
 
-        print(request.get_json())
-
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
@@ -45,7 +43,7 @@ class RegisterApi(MethodView):
         session['token'] = token
         session['user'] = user.email
 
-        return make_response(jsonify(dict(user=user.email, token=token.decode('ascii'))), 200)
+        return make_response(jsonify(dict(user=user.email, token=token.decode('ascii'))), 201)
 
 
 class LoginApi(MethodView):
@@ -118,12 +116,13 @@ class ResetPassword(MethodView):
 
 class ChangePassword(MethodView):
 
+    @login_required
     def post(self):
         if not request.get_json():
             return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
 
         data = request.get_json()
-        email = data.get('email')
+        email = session.get('user')
         old_password = data.get('old_password')
         new_password = data.get('new_password')
         confirm_new = data.get('confirm_password')

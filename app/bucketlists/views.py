@@ -57,15 +57,11 @@ class BucketListsApi(MethodView):
 
         data = request.get_json()
         bucket_name = data.get('bucket_name')
-        category = data.get('category')
+        category = data.get('category', 'General')
         description = data.get('description')
 
         if not bucket_name:
             return make_response(jsonify(dict(error='Please enter the bucket name')), 400)
-
-        if not category:
-            return make_response(jsonify(dict(error='Please enter the category of your bucket')),
-                                 400)
 
         category = Category.exists(category)
 
@@ -77,7 +73,7 @@ class BucketListsApi(MethodView):
         data = dict(bucket_name=bucket_name, user_id=user.id, category_id=category.id,
                     description=description)
         bucket = Bucket(**data).save()
-        return make_response(jsonify(bucket=bucket.serialize), 200)
+        return make_response(jsonify(bucket=bucket.serialize), 201)
 
     @login_required
     def put(self, bucket_id=None):
@@ -94,10 +90,6 @@ class BucketListsApi(MethodView):
 
         if not bucket_name:
             return make_response(jsonify(dict(error='Please enter the bucket name')), 400)
-
-        if not category:
-            return make_response(jsonify(dict(error='Please enter the category of your bucket')),
-                                 400)
 
         if not description:
             return make_response(jsonify(dict(error='Please describe your bucket')), 400)
