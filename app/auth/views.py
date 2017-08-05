@@ -41,7 +41,7 @@ class RegisterApi(MethodView):
 
         token = user.generate_token()
         session['user'] = user.email
-        response = make_response(jsonify(dict(success='Account created successfully')), 201)
+        response = make_response(jsonify(dict(success='Account created successfully')))
         response.headers['token'] = token
         return response
 
@@ -72,7 +72,8 @@ class LoginApi(MethodView):
 
         token = user.generate_token()
         session['user'] = user.email
-        response = make_response(jsonify(dict(success='Authenticated successfully'), 200))
+        response = make_response(jsonify(dict(success='Authenticated successfully',
+                                              token=token.decode())))
         response.headers['token'] = token
         return response
 
@@ -81,8 +82,9 @@ class LogoutApi(MethodView):
 
     def post(self):
         session.pop('user', None)
-        session.pop('token', None)
-        return make_response(jsonify(dict(success='Logout successful')), 200)
+        response = make_response(jsonify(dict(success='Logout successful')))
+        response.headers['token'] = None
+        return response
 
 
 class ResetPassword(MethodView):
