@@ -11,9 +11,14 @@ from app.bucketlists.views import bucketlist
 from app.search.views import search
 
 
-@app.errorhandler(400)
-def not_found():
+@app.errorhandler(404)
+def not_found(error):
     return make_response(jsonify(dict(error='Resource not found')), 404)
+
+
+@app.errorhandler(500)
+def server_error(error):
+    return make_response(jsonify(dict(error='Server error! Please try again')), 500)
 
 
 app.register_blueprint(auth)
