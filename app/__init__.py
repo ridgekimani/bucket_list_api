@@ -21,6 +21,11 @@ def server_error(error):
     return make_response(jsonify(dict(error='Server error! Please try again')), 500)
 
 
+@app.errorhandler(405)
+def method_not_allowed(error):
+    return make_response(jsonify(dict(error='Method not allowed')), 405)
+
+
 app.register_blueprint(auth)
 app.register_blueprint(bucketlist)
 app.register_blueprint(search)
