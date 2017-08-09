@@ -567,3 +567,33 @@ operations of Bucket and Items.
     * content
         * {"error": "Unauthorized. Please login"}
   
+## SEARCH API endpoints
+* URL:
+    * /api/v1/search/?q={}
+    
+* METHOD:
+    * GET
+    
+* DATA FORMAT
+    * application/json
+    
+* REQUIRED:
+    * q
+    
+* SUCCESS:
+    * status code 200
+    * content 
+    
+    
+          {
+          "activities": 
+              [
+                  {activity1},
+                  {activity2}
+              ]
+          "buckets":
+            [
+                {bucket1},
+                {bucket2}
+          }
+    
