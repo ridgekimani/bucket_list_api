@@ -24,7 +24,7 @@ class DevelopmentConfig(Config):
 
 
 class TestingConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'test.db')
+    SQLALCHEMY_DATABASE_URI = "postgresql://bucket_list:bucket_list@localhost:5432/test_bucket_list"
     TESTING = True
 
 
