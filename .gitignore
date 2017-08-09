@@ -10,5 +10,4 @@ lib/
 .venv
 venv/
 ENV/
-migrations/
 .idea/
