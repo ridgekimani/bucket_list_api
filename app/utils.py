@@ -41,10 +41,11 @@ def login_required(func):
             email = session.get('user')
             token = request.headers.get('token')
             if token and not email:
-                if User.verify_token(token):
-                    session['user'] = User.verify_token(token).email
+                if User.verify_token(token) is None:
+                    return make_response(jsonify(dict(error='Invalid session or token. Please '
+                                                            'login')), 403)
                 else:
-                    return make_response(jsonify(dict(error='Invalid session. Please login')), 403)
+                    session['user'] = User.verify_token(token).email
 
             if email and not token:
                 User.query.filter_by(email=email).first()
