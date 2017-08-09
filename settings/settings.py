@@ -1,8 +1,4 @@
 import os
-import sys
-
-
-BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
 
 class Config(object):
@@ -10,7 +6,11 @@ class Config(object):
     TESTING = False
     CSRF_ENABLED = True
     SECRET_KEY = '3caaa0a7-7d1c-430f-84e3-1161cdff1b0b'
-    SQLALCHEMY_DATABASE_URI = "postgresql://bucket_list:bucket_list@localhost/bucket_list_db"
+    if os.environ.get('DATABASE_URL') is None:
+        SQLALCHEMY_DATABASE_URI = "postgresql://bucket_list:bucket_list@localhost/bucket_list_db"
+    else:
+        SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
