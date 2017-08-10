@@ -339,16 +339,20 @@ class TestSearchApi(unittest.TestCase):
         db.create_all()
         self.user = User(email='test@email.com', password='test_password').get_or_create()
         self.bucket = Bucket(bucket_name='Test', user_id=self.user.id, description='Test').save()
+        with self.app as app_:
+            with app_.session_transaction() as sess:
+                sess['user'] = self.user.email
 
     def test_search(self):
         Activity(description='Test desc', user=self.user, bucket_id=self.bucket.id).save()
-        response = self.app.get('/search/?q=test')
+        response = self.app.get('/api/v1/search?q=test')
         assert response.status_code == 200
 
     def tearDown(self):
         User.drop_all()
         db.session.remove()
         db.drop_all()
+
 
 if __name__ == '__main__':
     unittest.main()

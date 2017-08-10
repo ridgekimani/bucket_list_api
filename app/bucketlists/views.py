@@ -39,12 +39,12 @@ class BucketListsApi(MethodView):
         next_page = ''
         previous_page = ''
         if page_buckets.has_next:
-            next_page = 'http://127.0.0.1:5000/bucketlists/?page=' + str(page+1) + '&limit=' + str(
-                limit)
+            next_page = 'http://127.0.0.1:5000/api/v1/bucketlists/?page=' + str(page+1) + \
+                        '&limit=' + str(limit)
 
         if page_buckets.has_prev:
-            previous_page = 'http://127.0.0.1:5000/bucketlists/?page=' + str(page-1) + '&limit=' \
-                            + str(limit)
+            previous_page = 'http://127.0.0.1:5000/api/v1/bucketlists/?page=' + str(page-1) + \
+                            '&limit=' + str(limit)
 
         return make_response(jsonify(buckets=[bucket.serialize for bucket in page_buckets.items],
                                      next_page=next_page, previous_page=previous_page))
@@ -91,9 +91,6 @@ class BucketListsApi(MethodView):
         if not bucket_name:
             return make_response(jsonify(dict(error='Please enter the bucket name')), 400)
 
-        if not description:
-            return make_response(jsonify(dict(error='Please describe your bucket')), 400)
-
         email = session.get('user')
         user = User.query.filter_by(email=email).first()
         bucket = Bucket.query.filter_by(id=bucket_id, user_id=user.id).first()
@@ -101,9 +98,13 @@ class BucketListsApi(MethodView):
         if not bucket:
             return make_response(jsonify(dict(error='Bucket not found!')), 400)
 
-        category = Category.exists(category)
-        bucket.description = description
-        bucket.category_id = category.id
+        if category:
+            category = Category.exists(category)
+            bucket.category_id = category.id
+
+        if description:
+            bucket.description = description
+
         bucket.bucket_name = bucket_name
         bucket.updated = datetime.now()
         bucket.save()
@@ -158,12 +159,12 @@ class ItemsApi(MethodView):
         next_page = ''
         previous_page = ''
         if page_items.has_next:
-            next_page = 'http://127.0.0.1:5000/bucketlists/'+str(bucket_id)+'/items?page=' + \
-                        str(page+1) + '&limit=' + str(limit)
+            next_page = 'http://127.0.0.1:5000/api/v1/bucketlists/'+str(
+                bucket_id)+'/items?page=' + str(page+1) + '&limit=' + str(limit)
 
         if page_items.has_prev:
-            previous_page = 'http://127.0.0.1:5000/bucketlists/'+str(bucket_id)+'/items?page=' + \
-                             str(page-1) + '&limit=' + str(limit)
+            previous_page = 'http://127.0.0.1:5000/api/v1/bucketlists/'+str(
+                bucket_id)+'/items?page=' + str(page-1) + '&limit=' + str(limit)
 
         return make_response(jsonify(buckets=[bucket.serialize for bucket in page_items.items],
                                      next_page=next_page, previous_page=previous_page))
