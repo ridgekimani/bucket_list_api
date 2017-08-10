@@ -569,7 +569,7 @@ operations of Bucket and Items.
   
 ## SEARCH API endpoints
 * URL:
-    * /api/v1/search/?q={}
+    * /api/v1/search?q={}
     
 * METHOD:
     * GET
