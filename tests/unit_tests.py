@@ -248,7 +248,7 @@ class TestBucketListTestCases(unittest.TestCase):
         data = json.dumps(dict(bucket_name='update test bucket'))
         response = self.app.put('/api/v1/bucketlists/' + str(self.bucket.id), data=data,
                                 content_type='application/json')
-        assert response.status_code == 400
+        assert response.status_code == 200
 
     def test_update_bucket_with_invalid_bucket(self):
         data = json.dumps(dict(bucket_name='update test bucket',
