@@ -1,4 +1,4 @@
-from flask import Flask, make_response, jsonify
+from flask import Flask, make_response, jsonify, redirect
 
 from settings.settings import app_config
 
@@ -25,6 +25,9 @@ def server_error(error):
 def method_not_allowed(error):
     return make_response(jsonify(dict(error='Method not allowed')), 405)
 
+@app.route('/')
+def index():
+    return redirect("https://app.swaggerhub.com/apis/ridgekimani/bucket_list/1.0.0")
 
 app.register_blueprint(auth)
 app.register_blueprint(bucketlist)

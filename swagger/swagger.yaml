@@ -1,0 +1,378 @@
+swagger: "2.0"
+info:
+  description: "This is the Bucket list api"
+  version: "1.0.0"
+  title: "Bucket List"
+  contact:
+    email: "ridgekimani@gmail.com"
+
+tags:
+- name: "Auth"
+  description: "Operations about the User"
+
+- name: "Bucketlist"
+  description: "Bucket List manipulation"
+
+- name: "Item"
+  description: "Item Manipulation"
+
+
+- name: "Search"
+  description: "Searching items"
+
+paths:
+  /auth/register:
+    post:
+      tags:
+      - "Auth"
+      summary: "Register a new user"
+      description: ""
+      operationId: "register user"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Create a user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        409:
+          description: "User already exists with that email"
+        401:
+          description: "Invalid input"
+
+        201:
+          description: "User created successfully"
+
+  /auth/login:
+    post:
+      tags:
+        - "Auth"
+      summary: "Login User"
+      description: ""
+      operationId: "login user"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Login a user object"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+
+      responses:
+        200:
+          description: ""
+
+  /auth/logout:
+    post:
+      tags:
+      - "Auth"
+      summary: "logout user"
+      description: "logout user"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: "Logout successful"
+
+  /bucketlists/:
+    get:
+      tags:
+      - Bucketlist
+      summary: "Get list of buckets"
+      description: ""
+      security:
+      - api_key: []
+
+      parameters:
+      - name: limit
+        in: query
+        type: integer
+        required: false
+
+      responses:
+        200:
+          description: "List of serialized buckets"
+
+        403:
+          description: "Unauthorized! Please log in"
+    post:
+      tags:
+        - Bucketlist
+      summary: "Create a new bucket"
+      description: ""
+      security:
+      - api_key: []
+      responses:
+        201:
+          description: "serialized bucket object"
+
+        403:
+          description: "Unauthorized!Please log in"
+
+  /bucketlists/{bucket_id}:
+    get:
+      tags:
+      - Bucketlist
+      summary: "Get a single bucket "
+      description: ""
+      operationId: "get bucketlists"
+      parameters:
+      - name: bucket_id
+        in: path
+        type: integer
+        required: true
+
+
+      security:
+      - api_key: []
+      produces:
+      - application/json
+
+      responses:
+        200:
+          description: "serialized bucket"
+
+        403:
+          description: "Unauthorized. Please login!"
+
+        404:
+          description: "Resource not found"
+
+    put:
+      tags:
+        - Bucketlist
+      summary: "Update a bucket"
+      description: ""
+      parameters:
+      - name: bucket_id
+        in: path
+        type: integer
+        required: true
+      security:
+      - api_key: []
+      responses:
+
+        200:
+          description: "serialized bucket object"
+
+        403:
+          description: "Unauthorized!Please log in"
+
+        404:
+          description: "Resource not found"
+
+    delete:
+      tags:
+        - Bucketlist
+      summary: "Delete a bucket object"
+      description: ""
+      parameters:
+      - name: bucket_id
+        in: path
+        type: integer
+        required: true
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "list of serialzied buckets"
+
+        401:
+          description: "Bucket does not exist"
+
+        403:
+          description: "Unauthorized!Please log in"
+
+        404:
+          description: "Resource not found"
+
+  /bucketlists/{bucket_id}/items/:
+    get:
+      tags:
+      - Item
+      summary: Get list of items
+      description: ""
+      parameters:
+      - name: bucket_id
+        in: path
+        type: integer
+        required: true
+
+      - name: limit
+        in: query
+        type: integer
+        required: false
+      security:
+      - api_key: []
+
+      responses:
+        200:
+          description: "Serialized items list"
+
+        404:
+          description: "Resource not found"
+
+  /bucketlists/{bucket_id}/items/{item_id}:
+    get:
+      tags:
+      - "Item"
+      summary: "Get item "
+      description: ""
+      parameters:
+      - name: bucket_id
+        in: path
+        type: integer
+        required: true
+      - name: item_id
+        in: path
+        type: integer
+        required: true
+
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "serialized list of items or serialized item"
+
+        403:
+          description: "Unauthorized! Please log in!"
+
+        404:
+          description: "Resource not found"
+    post:
+      tags:
+        - "Item"
+      summary: "Add an item"
+      description: ""
+      parameters:
+      - name: bucket_id
+        in: path
+        type: integer
+        required: true
+      - name: item_id
+        in: path
+        type: integer
+        required: true
+
+      security:
+      - api_key: []
+      responses:
+        200:
+          description: "serialized item"
+
+        400:
+          description: "Bad request! Invalid data"
+
+        403:
+          description: "Unauthorized! Please log in!"
+
+        404:
+          description: "Resource not found"
+
+    put:
+      tags:
+        - "Item"
+      summary: "Update a item"
+      description: ""
+      security:
+      - api_key: []
+      parameters:
+      - name: bucket_id
+        in: path
+        type: integer
+        required: true
+
+      - name: item_id
+        in: path
+        type: integer
+        required: true
+
+      responses:
+        200:
+          description: "serialized item"
+
+        400:
+          description: "Bad request! Invalid data"
+
+        403:
+          description: "Unauthorized! Please log in!"
+
+        404:
+          description: "Resource not found"
+
+    delete:
+      tags:
+        - "Item"
+      summary: "Delete an item"
+      description: ""
+      security:
+      - api_key: []
+      parameters:
+      - name: bucket_id
+        in: path
+        type: integer
+        required: true
+
+      - name: item_id
+        in: path
+        type: integer
+        required: true
+      responses:
+        200:
+          description: "serialized items"
+
+
+        403:
+          description: "Unauthorized! Please log in!"
+
+        404:
+          description: "Resource not found"
+
+  /search:
+    get:
+      tags:
+       - Search
+      summary: "Search items and buckets"
+      description: ""
+      parameters:
+      - name: q
+        in: query
+        type: string
+        required: true
+
+      responses:
+        200:
+          description: Serialized buckets and items
+
+        403:
+          description: Unauthorized! Please Log in
+
+definitions:
+  User:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+      password:
+        type: "string"
+
+
+securityDefinitions:
+  api_key:
+    type: apiKey
+    name: token
+    in: header
+
+host: ridge-bucket-list-api.herokuapp.com
+basePath: /api/v1
+schemes:
+  - http
