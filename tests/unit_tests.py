@@ -405,6 +405,10 @@ class TestSearchApi(unittest.TestCase):
         response = self.app.get('/api/v1/search?q=test')
         assert response.status_code == 200
 
+    def test_search_with_no_parameters(self):
+        response = self.app.get('/api/v1/search')
+        assert response.status_code == 400
+
     def tearDown(self):
         User.drop_all()
         db.session.remove()
