@@ -21,6 +21,7 @@ before_script:
   - psql -c "CREATE DATABASE test_bucket_list;" -U postgres
   - psql -c "CREATE USER bucket_list WITH PASSWORD 'bucket_list';" -U postgres
   - psql -c "GRANT ALL PRIVILEGES ON DATABASE test_bucket_list TO bucket_list;" -U postgres
+  - python manage.py db upgrade
 
 script: nosetests --with-coverage
 
