@@ -4,15 +4,25 @@ from app import app
 
 from flask_bcrypt import Bcrypt
 
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, BaseQuery
 
 from itsdangerous import TimedJSONWebSignatureSerializer, BadSignature, SignatureExpired
-
 from sqlalchemy.ext.hybrid import hybrid_property
-
+from sqlalchemy_searchable import make_searchable
+from sqlalchemy_searchable import SearchQueryMixin
+from sqlalchemy_utils.types import TSVectorType
 
 db = SQLAlchemy(app)
 hashing = Bcrypt(app)
+make_searchable()
+
+
+class BucketQuery(BaseQuery, SearchQueryMixin):
+    pass
+
+
+class ItemQuery(BaseQuery, SearchQueryMixin):
+    pass
 
 
 class User(db.Model):
@@ -94,6 +104,7 @@ class User(db.Model):
 
 class Bucket(db.Model):
     __tablename__ = 'bucket'
+    query_class = BucketQuery
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     bucket_name = db.Column(db.String(70), nullable=False)
@@ -104,6 +115,7 @@ class Bucket(db.Model):
     description = db.Column(db.String(100), nullable=False)
     activities = db.relationship("Activity", backref='bucket', lazy='dynamic',
                                  cascade="delete, delete-orphan")
+    search_vector = db.Column(TSVectorType('bucket_name', 'description'))
 
     def get_id(self):
         return self.bucket_id
@@ -152,6 +164,7 @@ class Category(db.Model):
 
 class Activity(db.Model):
     __tablename__ = 'activity'
+    query_class = ItemQuery
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     description = db.Column(db.Text())
@@ -159,6 +172,7 @@ class Activity(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     created = db.Column(db.DateTime(), default=datetime.datetime.now())
     updated = db.Column(db.DateTime(), default=datetime.datetime.now())
+    search_vector = db.Column(TSVectorType('description'))
 
     def get_id(self):
         return self.id

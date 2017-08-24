@@ -16,8 +16,8 @@ def search_api():
 
     email = session.get('user')
     user = User.query.filter_by(email=email).first()
-    bucket_lists = Bucket.query.filter_by(bucket_name=query, user_id=user.id).all()
-    activities = Activity.query.filter_by(description=query, user_id=user.id).all()
+    bucket_lists = Bucket.query.search(query).all()
+    activities = Activity.query.search(query).all()
     bucket_obj = [bucket.serialize for bucket in bucket_lists]
     activity_obj = [activity.serialize for activity in activities]
     return make_response(jsonify(buckets=bucket_obj, activities=activity_obj))
