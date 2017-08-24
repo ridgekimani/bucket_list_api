@@ -143,6 +143,11 @@ class Bucket(db.Model):
         bucket = Bucket.query.filter_by(id=bucket_id, user_id=user_id).first()
         return True if bucket else False
 
+    @staticmethod
+    def test_duplicate(bucket_name, user):
+        bucket = Bucket.query.filter_by(bucket_name=bucket_name, user_id=user).first()
+        return True if bucket else False
+
 
 class Category(db.Model):
     __tablename__ = 'category'
@@ -201,3 +206,9 @@ class Activity(db.Model):
                                             id=activity_id).first()
         db.session.delete(activity)
         db.session.commit()
+
+    @staticmethod
+    def test_duplicate(bucket_id, user_id, description):
+        activity = Activity.query.filter_by(bucket_id=bucket_id, user_id=user_id,
+                                            description=description).first()
+        return True if activity else False
