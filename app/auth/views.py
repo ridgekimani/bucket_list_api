@@ -13,7 +13,15 @@ auth = Blueprint('auth', __name__, url_prefix='/api/v1/auth')
 
 
 class RegisterApi(MethodView):
+    """
+    This Method view is used to Register a user
+    It contains the post method only
+    """
     def post(self):
+        """
+        Endpoint that is used to save the data to the database
+        :return: json_response
+        """
         if not request.get_json():
             return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
 
@@ -54,8 +62,15 @@ class RegisterApi(MethodView):
 
 
 class LoginApi(MethodView):
+    """
+    Used to Login a user
+    """
 
     def post(self):
+        """
+        Used to verify the user credentials
+        :return: json response
+        """
         if not request.get_json():
             return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
 
@@ -95,8 +110,17 @@ class LogoutApi(MethodView):
 
 
 class ResetPassword(MethodView):
+    """
+    Used to reset a user's password when forgotten.
+    It sends an email with the new auto generated password
+    """
 
     def post(self):
+        """
+        Used to send details to be reset
+        :return:
+        """
+
         if not request.get_json():
             return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
 
@@ -125,9 +149,17 @@ class ResetPassword(MethodView):
 
 
 class ChangePassword(MethodView):
+    """
+    This method is used to change the password of the user
+    """
 
     @login_required
     def put(self):
+        """
+        This method is used to update the password of the user
+        :return:
+        """
+
         if not request.get_json():
             return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
 
@@ -165,9 +197,18 @@ class ChangePassword(MethodView):
 
 
 class DeleteAccount(MethodView):
+    """
+    This method is used to delete the user's account
+
+    """
 
     @login_required
     def delete(self):
+        """
+        The user must be logged in and should provide a password to delete the account
+        :return:
+        """
+
         email = session.get('user')
         if not request.get_json():
             return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)

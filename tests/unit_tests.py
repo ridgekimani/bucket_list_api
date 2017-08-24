@@ -10,6 +10,9 @@ app.config.from_object(app_config['testing'])
 
 
 class TestRegisterApi(unittest.TestCase):
+    """
+    Test for Register User endpoint
+    """
     def setUp(self):
         self.app = app.test_client()
         db.create_all()
@@ -56,6 +59,9 @@ class TestRegisterApi(unittest.TestCase):
 
 
 class TestLoginApi(unittest.TestCase):
+    """
+    Test for login user endpoints
+    """
     def setUp(self):
         self.app = app.test_client()
         db.create_all()
@@ -95,6 +101,9 @@ class TestLoginApi(unittest.TestCase):
 
 
 class TestResetPassword(unittest.TestCase):
+    """
+    Test for reset password endpoints
+    """
     def setUp(self):
         self.app = app.test_client()
         db.create_all()
@@ -123,6 +132,9 @@ class TestResetPassword(unittest.TestCase):
 
 
 class TestChangePassword(unittest.TestCase):
+    """
+    Test for change password endpoints
+    """
     def setUp(self):
         self.app = app.test_client()
         db.create_all()
@@ -169,6 +181,9 @@ class TestChangePassword(unittest.TestCase):
 
 
 class TestDeleteAccount(unittest.TestCase):
+    """
+    Test delete account endpoints
+    """
     def setUp(self):
         self.app = app.test_client()
         db.create_all()
@@ -200,6 +215,9 @@ class TestDeleteAccount(unittest.TestCase):
 
 
 class TestBucketListTestCases(unittest.TestCase):
+    """
+    Test bucket list test cases
+    """
     def setUp(self):
         self.app = app.test_client()
         db.create_all()
@@ -214,6 +232,8 @@ class TestBucketListTestCases(unittest.TestCase):
 
         response = self.app.post('/api/v1/bucketlists/', data=data, content_type='application/json')
         assert response.status_code == 201
+        response2 = self.app.post('/api/v1/bucketlists/', data=data, content_type='application/json')
+        assert response2.status_code == 409
 
     def test_view_buckets(self):
         response = self.app.get('/api/v1/bucketlists/')
@@ -284,6 +304,9 @@ class TestBucketListTestCases(unittest.TestCase):
 
 
 class TestItemTestCases(unittest.TestCase):
+    """
+    Test Item test cases
+    """
     def setUp(self):
         self.app = app.test_client()
         db.create_all()
@@ -300,6 +323,11 @@ class TestItemTestCases(unittest.TestCase):
                                  data=data, content_type='application/json')
 
         assert response.status_code == 201
+
+        response2 = self.app.post('/api/v1/bucketlists/' + str(self.bucket.id) + '/items',
+                                 data=data, content_type='application/json')
+
+        assert response2.status_code == 409
 
     def test_add_activity_with_no_data(self):
         response = self.app.post('/api/v1/bucketlists/' + str(self.bucket.id) + '/items',
@@ -360,6 +388,9 @@ class TestItemTestCases(unittest.TestCase):
 
 
 class TestSearchApi(unittest.TestCase):
+    """
+    Test search api
+    """
     def setUp(self):
         self.app = app.test_client()
         db.create_all()

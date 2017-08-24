@@ -17,6 +17,7 @@ manager.add_command('db', MigrateCommand)
 def init_db():
     """
     Drops and re-creates the SQL schema
+    Should be the second command to be run after the db migrate command
     """
     db.drop_all()
     db.configure_mappers()

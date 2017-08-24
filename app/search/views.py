@@ -6,10 +6,13 @@ from app.utils import login_required
 search = Blueprint('search', __name__, url_prefix='/api/v1')
 
 
-# TODO improve the search logic
 @search.route('/search', methods=['GET'])
 @login_required
 def search_api():
+    """
+    This end point is used to search for buckets and activities in the bucket
+    :return: json response
+    """
     query = request.args.get('q')
     if not query:
         return make_response(jsonify(error='Please enter search parameters'), 400)

@@ -38,7 +38,7 @@ paths:
         description: "Create a user object"
         required: true
         schema:
-          $ref: "#/definitions/User"
+          $ref: "#/definitions/RegisterUser"
       responses:
         409:
           description: "User already exists with that email"
@@ -65,7 +65,7 @@ paths:
         description: "Login a user object"
         required: true
         schema:
-          $ref: "#/definitions/User"
+          $ref: "#/definitions/LoginUser"
 
       responses:
         200:
@@ -111,6 +111,14 @@ paths:
       description: ""
       security:
       - api_key: []
+
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Create a bucket"
+        schema:
+          $ref: "#/definitions/Bucket"
+
       responses:
         201:
           description: "serialized bucket object"
@@ -130,7 +138,6 @@ paths:
         in: path
         type: integer
         required: true
-
 
       security:
       - api_key: []
@@ -157,6 +164,11 @@ paths:
         in: path
         type: integer
         required: true
+      - in: "body"
+        name: "body"
+        description: "Update a bucket"
+        schema:
+          $ref: "#/definitions/Bucket"
       security:
       - api_key: []
       responses:
@@ -262,6 +274,12 @@ paths:
         in: path
         type: integer
         required: true
+      - in: "body"
+        name: "body"
+        description: "Add an Item"
+        schema:
+          $ref: "#/definitions/Item"
+
 
       security:
       - api_key: []
@@ -295,6 +313,12 @@ paths:
         in: path
         type: integer
         required: true
+
+      - in: "body"
+        name: "body"
+        description: "Update an Item"
+        schema:
+          $ref: "#/definitions/Item"
 
       responses:
         200:
@@ -343,6 +367,8 @@ paths:
        - Search
       summary: "Search items and buckets"
       description: ""
+      security:
+      - api_key: []
       parameters:
       - name: q
         in: query
@@ -357,7 +383,7 @@ paths:
           description: Unauthorized! Please Log in
 
 definitions:
-  User:
+  LoginUser:
     type: "object"
     properties:
       email:
@@ -365,6 +391,27 @@ definitions:
       password:
         type: "string"
 
+  RegisterUser:
+    type: "object"
+    properties:
+      email:
+        type: "string"
+      password:
+        type: "string"
+      confirm_password:
+        type: "string"
+  Bucket:
+    type: "object"
+    properties:
+      bucket_name:
+        type: "string"
+      description:
+        type: "string"
+  Item:
+    type: "object"
+    properties:
+      description:
+        type: string
 
 securityDefinitions:
   api_key:

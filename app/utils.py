@@ -10,6 +10,11 @@ from smtplib import SMTP, SMTPException
 
 
 def validate_email(email):
+    """
+    This function is used to validate a user's email
+    :param email:
+    :return: Bool
+    """
     if len(email) > 7:
         if re.match("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$",
                     email) is not None:
@@ -18,6 +23,12 @@ def validate_email(email):
 
 
 def send_mail(recipient, password):
+    """
+    This function is used to send an email while resetting the password
+    :param recipient:
+    :param password:
+    :return: Bool
+    """
     sender = 'betatestmail10@gmail.com'
     pwd = 'naivasha'
     message = "Your new password is %s" % password
@@ -35,6 +46,11 @@ def send_mail(recipient, password):
 
 
 def login_required(func):
+    """
+    This function is used to check the login status of a user
+    :param func:
+    :return: login status
+    """
     @wraps(func)
     def check_login_status(*args, **kwargs):
         if 'token' in request.headers or 'user' in session:
@@ -56,6 +72,11 @@ def login_required(func):
 
 
 def validate_text(value):
+    """
+    This function is used to validate the nature of text that is passed to the function
+    :param value:
+    :return:
+    """
     stripped_value = str(value).strip()
     if len(stripped_value) == 0:
         return False

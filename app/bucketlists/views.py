@@ -11,9 +11,18 @@ bucketlist = Blueprint('bucketlists', __name__, url_prefix='/api/v1/bucketlists'
 
 
 class BucketListsApi(MethodView):
+    """
+    This class is used to handle the bucket list operations that will be done by a user
+    This includes create, delete, update and read buckets
+    """
 
     @login_required
     def get(self, bucket_id=None):
+        """
+        Used to get the buckets that have been added
+        :param bucket_id:
+        :return: serialized objects or list of serialized objects
+        """
         limit = request.args.get('limit', None)
         page = request.args.get("page", 1)
 
@@ -49,6 +58,10 @@ class BucketListsApi(MethodView):
 
     @login_required
     def post(self):
+        """
+        Used to add a user's bucket
+        :return: serialized bucket
+        """
 
         if not request.get_json():
             return make_response(jsonify(dict(error='Bad request. Please enter some data')), 400)
@@ -74,6 +87,10 @@ class BucketListsApi(MethodView):
 
         email = session.get('user')
         user = User.query.filter_by(email=email).first()
+
+        if Bucket.test_duplicate(bucket_name, user.id):
+            return make_response(jsonify(error='Bucket name exists. Add activities from it'), 409)
+
         data = dict(bucket_name=bucket_name, user_id=user.id, category_id=category.id,
                     description=description)
         bucket = Bucket(**data).save()
@@ -81,6 +98,11 @@ class BucketListsApi(MethodView):
 
     @login_required
     def put(self, bucket_id=None):
+        """
+        Used to update a bucket
+        :param bucket_id:
+        :return: serialized bucket
+        """
         if not bucket_id:
             return make_response(jsonify(dict(error='Please specify the bucket id')), 400)
 
@@ -123,6 +145,11 @@ class BucketListsApi(MethodView):
 
     @login_required
     def delete(self, bucket_id=None):
+        """
+        Used to delete a bucket
+        :param bucket_id:
+        :return: serialized list of buckets
+        """
         if not bucket_id:
             return make_response(jsonify(dict(error='Please specify the bucket id')), 400)
 
@@ -138,9 +165,20 @@ class BucketListsApi(MethodView):
 
 
 class ItemsApi(MethodView):
-
+    """
+    This classs is used to perform the CRUD operations of the Items.
+    This include Create, Delete, Update and Read
+    The user must be logged in to consume this endpoints
+    """
     @login_required
     def get(self, bucket_id=None, item_id=None):
+        """
+        Used to get the list of buckets or a single bucket
+        :param bucket_id:
+        :param item_id:
+        :return: serialized bucket or serialized list of buckets
+        """
+
         email = session.get('user')
         user = User.query.filter_by(email=email).first()
 
@@ -180,6 +218,11 @@ class ItemsApi(MethodView):
 
     @login_required
     def post(self, bucket_id=None):
+        """
+        Used to create a single iten
+        :param bucket_id:
+        :return: serialized item
+        """
         if not bucket_id:
             return make_response(jsonify(error='Please specify your bucket id'), 400)
 
@@ -201,11 +244,20 @@ class ItemsApi(MethodView):
         if not validate_text(description):
             return make_response(jsonify(dict(error="Please enter a valid description")), 400)
 
+        if Activity.test_duplicate(bucket_id, user.id, description):
+            return make_response(jsonify(dict(error="Activity exists with the same description!")), 409)
+
         activity = Activity(description=description, bucket_id=bucket_id, user_id=user.id).save()
         return make_response(jsonify(dict(item=activity.serialize)), 201)
 
     @login_required
     def put(self, bucket_id=None, item_id=None):
+        """
+        Used to update the item
+        :param bucket_id:
+        :param item_id:
+        :return: serialized item
+        """
         if not bucket_id:
             return make_response(jsonify(error='Please specify the bucket id'), 400)
 
@@ -239,6 +291,12 @@ class ItemsApi(MethodView):
 
     @login_required
     def delete(self, bucket_id, item_id):
+        """
+        Used to delete the item
+        :param bucket_id:
+        :param item_id:
+        :return: available list of serialized items
+        """
         if not all([bucket_id, item_id]):
             return jsonify(dict(error='Please specify the bucket and the activity'), 400)
 
