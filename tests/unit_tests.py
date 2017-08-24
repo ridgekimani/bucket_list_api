@@ -14,6 +14,10 @@ class TestRegisterApi(unittest.TestCase):
     Test for Register User endpoint
     """
     def setUp(self):
+        """
+        Create initial data
+        :return: flask app
+        """
         self.app = app.test_client()
         db.create_all()
         User(email='test@users.com', password='test_password').get_or_create()
@@ -53,6 +57,10 @@ class TestRegisterApi(unittest.TestCase):
         assert response.status_code == 400
 
     def tearDown(self):
+        """
+        Destroy initial data
+        :return:
+        """
         User.drop_all()
         db.session.remove()
         db.drop_all()
@@ -63,6 +71,10 @@ class TestLoginApi(unittest.TestCase):
     Test for login user endpoints
     """
     def setUp(self):
+        """
+        Create initial data
+        :return: flask app
+        """
         self.app = app.test_client()
         db.create_all()
         User(email='test@users.com', password='test_password').get_or_create()
@@ -95,6 +107,10 @@ class TestLoginApi(unittest.TestCase):
         assert response.status_code == 400
 
     def tearDown(self):
+        """
+        Destroy initial data
+        :return:
+        """
         User.drop_all()
         db.session.remove()
         db.drop_all()
@@ -105,6 +121,10 @@ class TestResetPassword(unittest.TestCase):
     Test for reset password endpoints
     """
     def setUp(self):
+        """
+        Create initial data
+        :return: flask app
+        """
         self.app = app.test_client()
         db.create_all()
         User(email='ridgekimani@yahoo.com', password='test_password').get_or_create()
@@ -126,6 +146,10 @@ class TestResetPassword(unittest.TestCase):
         assert response.status_code == 400
 
     def tearDown(self):
+        """
+        Destroy initial data
+        :return:
+        """
         User.drop_all()
         db.session.remove()
         db.drop_all()
@@ -136,6 +160,10 @@ class TestChangePassword(unittest.TestCase):
     Test for change password endpoints
     """
     def setUp(self):
+        """
+        Create initial data
+        :return: flask app
+        """
         self.app = app.test_client()
         db.create_all()
         user = User(email='test@user.com', password='test_password').save()
@@ -175,6 +203,10 @@ class TestChangePassword(unittest.TestCase):
         assert res.status_code == 400
 
     def tearDown(self):
+        """
+        Destroy initial data
+        :return:
+        """
         User.drop_all()
         db.session.remove()
         db.drop_all()
@@ -185,6 +217,10 @@ class TestDeleteAccount(unittest.TestCase):
     Test delete account endpoints
     """
     def setUp(self):
+        """
+        Create initial data
+        :return: flask app
+        """
         self.app = app.test_client()
         db.create_all()
         user = User(email='test@email.com', password='test_password').get_or_create()
@@ -209,6 +245,10 @@ class TestDeleteAccount(unittest.TestCase):
         assert response.status_code == 400
 
     def tearDown(self):
+        """
+        Destroy initial data
+        :return:
+        """
         User.drop_all()
         db.session.remove()
         db.drop_all()
@@ -219,6 +259,10 @@ class TestBucketListTestCases(unittest.TestCase):
     Test bucket list test cases
     """
     def setUp(self):
+        """
+        Create initial data
+        :return: flask app
+        """
         self.app = app.test_client()
         db.create_all()
         user = User(email='test@email.com', password='test_password').get_or_create()
@@ -307,6 +351,10 @@ class TestBucketListTestCases(unittest.TestCase):
         assert response1.status_code == 400
 
     def tearDown(self):
+        """
+        Destroy initial data
+        :return:
+        """
         User.drop_all()
         db.session.remove()
         db.drop_all()
@@ -317,6 +365,10 @@ class TestItemTestCases(unittest.TestCase):
     Test Item test cases
     """
     def setUp(self):
+        """
+        Create initial data
+        :return: flask app
+        """
         self.app = app.test_client()
         db.create_all()
         self.user = User(email='test@email.com', password='test_password').get_or_create()
@@ -396,6 +448,10 @@ class TestItemTestCases(unittest.TestCase):
         assert response.status_code == 400
 
     def tearDown(self):
+        """
+        Destroy initial data
+        :return:
+        """
         User.drop_all()
         db.session.remove()
         db.drop_all()
@@ -406,6 +462,10 @@ class TestSearchApi(unittest.TestCase):
     Test search api
     """
     def setUp(self):
+        """
+        Create initial data
+        :return: flask app
+        """
         self.app = app.test_client()
         db.create_all()
         self.user = User(email='test@email.com', password='test_password').get_or_create()
@@ -424,6 +484,10 @@ class TestSearchApi(unittest.TestCase):
         assert response.status_code == 400
 
     def tearDown(self):
+        """
+        Destroy initial data
+        :return:
+        """
         User.drop_all()
         db.session.remove()
         db.drop_all()
