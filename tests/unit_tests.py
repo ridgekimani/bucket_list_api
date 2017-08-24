@@ -16,24 +16,31 @@ class TestRegisterApi(unittest.TestCase):
         User(email='test@users.com', password='test_password').get_or_create()
 
     def test_register_user(self):
-        data = dict(email='test@user1.com', password='test_password1')
+        data = dict(email='test@user1.com', password='test_password1', confirm_password='test_password1')
         response = self.app.post('/api/v1/auth/register', data=json.dumps(data),
                                  content_type='application/json')
         assert response.status_code == 200
 
     def test_register_with_existing_details(self):
-        data = dict(email='test@users.com', password='test_password')
+        data = dict(email='test@users.com', password='test_password', confirm_password='test_password')
         response = self.app.post('/api/v1/auth/register', data=json.dumps(data),
                                  content_type='application/json')
         assert response.status_code == 409
 
-    def test_register_with_missing_details(self):
+    def test_register_with_invalid_details(self):
         data = dict(email='test@email2.com')
         response = self.app.post('/api/v1/auth/register', data=json.dumps(data),
                                  content_type='application/json')
         assert response.status_code == 400
         response = self.app.post('/api/v1/auth/register', content_type='application/json',
-                                 data=json.dumps(dict(password='test_password')))
+                                 data=json.dumps(dict(password='test_password', confirm_password='sd')))
+        assert response.status_code == 400
+        response = self.app.post('/api/v1/auth/register', content_type='application/json',
+                                 data=json.dumps(dict(
+                                     email='test@email2.com',
+                                     password='test',
+                                     confirm_password='test')
+                                 ))
         assert response.status_code == 400
 
     def test_register_with_invalid_email(self):
