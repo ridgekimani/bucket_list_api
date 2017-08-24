@@ -250,6 +250,14 @@ class TestBucketListTestCases(unittest.TestCase):
                                 content_type='application/json')
         assert response.status_code == 200
 
+    def test_post_bucket_with_invalid_content(self):
+        data = json.dumps(dict(bucket_name='  '))
+        response = self.app.put('/api/v1/bucketlists/' + str(self.bucket.id), data=data,
+                                content_type='application/json')
+        assert response.status_code == 400
+        response2 = self.app.post('/api/v1/bucketlists/', data=data, content_type='application/json')
+        assert response2.status_code == 400
+
     def test_update_bucket_with_invalid_bucket(self):
         data = json.dumps(dict(bucket_name='update test bucket',
                                description='test update description'))
@@ -321,11 +329,22 @@ class TestItemTestCases(unittest.TestCase):
             act.id), content_type='application/json', data=data)
         assert response.status_code == 400
 
+        response2 = self.app.put('/api/v1/bucketlists/' + str(self.bucket.id) + '/items/' + str(
+            act.id), content_type='application/json', data=json.dumps(dict(description='  ')))
+        assert response2.status_code == 400
+
     def test_delete_activity(self):
         act = Activity(description='Test desc', user=self.user, bucket_id=self.bucket.id).save()
         response = self.app.delete('/api/v1/bucketlists/' + str(self.bucket.id) + '/items/' + str(
             act.id), content_type='application/json')
         assert response.status_code == 200
+
+    def test_post_activity_with_invalid_content(self):
+        data = json.dumps(dict(description='  '))
+        response = self.app.post('/api/v1/bucketlists/' + str(self.bucket.id) + '/items',
+                                 data=data, content_type='application/json')
+
+        assert response.status_code == 400
 
     def tearDown(self):
         User.drop_all()

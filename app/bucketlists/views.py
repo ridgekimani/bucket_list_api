@@ -1,6 +1,6 @@
 from app.models import Bucket, Activity, User, Category
 
-from app.utils import login_required
+from app.utils import login_required, validate_text
 
 from datetime import datetime
 
@@ -39,12 +39,10 @@ class BucketListsApi(MethodView):
         next_page = ''
         previous_page = ''
         if page_buckets.has_next:
-            next_page = 'http://127.0.0.1:5000/api/v1/bucketlists/?page=' + str(page+1) + \
-                        '&limit=' + str(limit)
+            next_page = request.base_url + '?page=' + str(page+1) + '&limit=' + str(limit)
 
         if page_buckets.has_prev:
-            previous_page = 'http://127.0.0.1:5000/api/v1/bucketlists/?page=' + str(page-1) + \
-                            '&limit=' + str(limit)
+            previous_page = request.base_url + '?page=' + str(page-1) + '&limit=' + str(limit)
 
         return make_response(jsonify(buckets=[bucket.serialize for bucket in page_buckets.items],
                                      next_page=next_page, previous_page=previous_page))
@@ -67,6 +65,12 @@ class BucketListsApi(MethodView):
 
         if not description:
             return make_response(jsonify(dict(error='Please describe your bucket')), 400)
+
+        if not validate_text(bucket_name):
+            return make_response(jsonify(dict(error="Please enter a valid bucket name")), 400)
+
+        if not validate_text(description):
+            return make_response(jsonify(dict(error="Please enter a valid description")), 400)
 
         email = session.get('user')
         user = User.query.filter_by(email=email).first()
@@ -91,6 +95,9 @@ class BucketListsApi(MethodView):
         if not bucket_name:
             return make_response(jsonify(dict(error='Please enter the bucket name')), 400)
 
+        if not validate_text(bucket_name):
+            return make_response(jsonify(dict(error="Please enter a valid bucket name")), 400)
+
         email = session.get('user')
         user = User.query.filter_by(email=email).first()
         bucket = Bucket.query.filter_by(id=bucket_id, user_id=user.id).first()
@@ -99,10 +106,14 @@ class BucketListsApi(MethodView):
             return make_response(jsonify(dict(error='Bucket not found!')), 400)
 
         if category:
+            if not validate_text(category):
+                return make_response(jsonify(dict(error="Please enter a valid description")), 400)
             category = Category.exists(category)
             bucket.category_id = category.id
 
         if description:
+            if not validate_text(description):
+                return make_response(jsonify(dict(error="Please enter a valid description")), 400)
             bucket.description = description
 
         bucket.bucket_name = bucket_name
@@ -159,12 +170,10 @@ class ItemsApi(MethodView):
         next_page = ''
         previous_page = ''
         if page_items.has_next:
-            next_page = 'http://127.0.0.1:5000/api/v1/bucketlists/'+str(
-                bucket_id)+'/items?page=' + str(page+1) + '&limit=' + str(limit)
+            next_page = request.base_url + '?page=' + str(page+1) + '&limit=' + str(limit)
 
         if page_items.has_prev:
-            previous_page = 'http://127.0.0.1:5000/api/v1/bucketlists/'+str(
-                bucket_id)+'/items?page=' + str(page-1) + '&limit=' + str(limit)
+            previous_page = request.base_url + '?page=' + str(page-1) + '&limit=' + str(limit)
 
         return make_response(jsonify(buckets=[bucket.serialize for bucket in page_items.items],
                                      next_page=next_page, previous_page=previous_page))
@@ -187,7 +196,10 @@ class ItemsApi(MethodView):
         description = data.get('description')
 
         if not description:
-            return make_response(jsonify(dict(error='Please describe your activity')), 40)
+            return make_response(jsonify(dict(error='Please describe your activity')), 400)
+
+        if not validate_text(description):
+            return make_response(jsonify(dict(error="Please enter a valid description")), 400)
 
         activity = Activity(description=description, bucket_id=bucket_id, user_id=user.id).save()
         return make_response(jsonify(dict(item=activity.serialize)), 201)
@@ -214,6 +226,9 @@ class ItemsApi(MethodView):
 
         if not description:
             return make_response(jsonify(dict(error='Please describe your activity')), 400)
+
+        if not validate_text(description):
+            return make_response(jsonify(dict(error="Please enter a valid description")), 400)
 
         activity = Activity.query.filter_by(bucket_id=bucket_id,
                                             id=item_id, user_id=user.id).first()

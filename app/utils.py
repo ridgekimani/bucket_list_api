@@ -53,3 +53,10 @@ def login_required(func):
             return make_response(jsonify(error='Unauthorised. Please login'), 403)
         return func(*args, **kwargs)
     return check_login_status
+
+
+def validate_text(value):
+    stripped_value = str(value).strip()
+    if len(stripped_value) == 0:
+        return False
+    return True
