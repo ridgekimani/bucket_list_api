@@ -20,6 +20,7 @@ class RegisterApi(MethodView):
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
+        confirm_password = data.get('confirm_password')
 
         if not email:
             return make_response(jsonify(dict(error='Please enter your email address')), 400)
@@ -31,8 +32,14 @@ class RegisterApi(MethodView):
             return make_response(jsonify(dict(error='Please enter your password')), 400)
 
         if len(password) < 6:
-            return make_response(jsonify(dict(error='Your password must be 6 characters long')),
+            return make_response(jsonify(dict(error='Your password must be 6 characters long and above')),
                                  400)
+
+        if not confirm_password:
+            return make_response(jsonify(dict(error='Please confirm your password')), 400)
+
+        if str(confirm_password) != str(password):
+            return make_response(jsonify(dict(error="Passwords don't match")), 400)
 
         if User.exists(email=email):
             return make_response(jsonify(dict(error='A user exists with that email')), 409)
