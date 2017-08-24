@@ -252,12 +252,21 @@ class TestBucketListTestCases(unittest.TestCase):
         assert response.status_code == 400
 
     def test_update_bucket(self):
+        Bucket(bucket_name='test1', user_id=self.bucket.user_id, description='test desc').save()
         data = json.dumps(dict(bucket_name='update test bucket', category='Update Category',
                                description='test update'))
 
         response = self.app.put('/api/v1/bucketlists/' + str(self.bucket.id), data=data,
                                 content_type='application/json')
         assert response.status_code == 200
+
+        data2 = json.dumps(dict(bucket_name='test1', category='Update Category',
+                                description='test update'))
+
+        response = self.app.put('/api/v1/bucketlists/' + str(self.bucket.id), data=data2,
+                                content_type='application/json')
+        print(response.status_code)
+        assert response.status_code == 409
 
     def test_update_bucket_without_id(self):
         data = json.dumps(dict(bucket_name='update test bucket',
@@ -325,7 +334,7 @@ class TestItemTestCases(unittest.TestCase):
         assert response.status_code == 201
 
         response2 = self.app.post('/api/v1/bucketlists/' + str(self.bucket.id) + '/items',
-                                 data=data, content_type='application/json')
+                                  data=data, content_type='application/json')
 
         assert response2.status_code == 409
 
@@ -352,10 +361,15 @@ class TestItemTestCases(unittest.TestCase):
 
     def test_update_activity(self):
         act = Activity(description='Test desc', user=self.user, bucket_id=self.bucket.id).save()
+        Activity(description='test1', user=self.user, bucket_id=self.bucket.id).save()
         data = json.dumps(dict(description='Update description'))
         response = self.app.put('/api/v1/bucketlists/' + str(self.bucket.id) + '/items/' + str(
             act.id), content_type='application/json', data=data)
         assert response.status_code == 200
+        data = json.dumps(dict(description='test1'))
+        response = self.app.put('/api/v1/bucketlists/' + str(self.bucket.id) + '/items/' + str(
+            act.id), content_type='application/json', data=data)
+        assert response.status_code == 409
 
     def test_update_activity_with_no_description(self):
         act = Activity(description='Test desc', user=self.user, bucket_id=self.bucket.id).save()

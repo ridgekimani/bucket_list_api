@@ -124,6 +124,11 @@ class BucketListsApi(MethodView):
         user = User.query.filter_by(email=email).first()
         bucket = Bucket.query.filter_by(id=bucket_id, user_id=user.id).first()
 
+        if bucket.bucket_name != bucket_name:
+            if Bucket.test_duplicate(bucket_name, user.id):
+                return make_response(jsonify(dict(error="Bucket name already exists!")), 409)
+            pass
+
         if not bucket:
             return make_response(jsonify(dict(error='Bucket not found!')), 400)
 
@@ -284,6 +289,11 @@ class ItemsApi(MethodView):
 
         activity = Activity.query.filter_by(bucket_id=bucket_id,
                                             id=item_id, user_id=user.id).first()
+
+        if description != activity.description:
+            if Activity.test_duplicate(bucket_id, user.id, description):
+                return make_response(jsonify(dict(error="Item exists with that name!")), 409)
+
         activity.description = description
         activity.updated = datetime.now()
         activity.save()
