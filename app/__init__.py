@@ -8,6 +8,7 @@ app.config.from_object(app_config['development'])
 
 from app.auth.views import auth
 from app.bucketlists.views import bucketlist
+from app.callback.views import callback
 from app.search.views import search
 
 
@@ -25,10 +26,12 @@ def server_error(error):
 def method_not_allowed(error):
     return make_response(jsonify(dict(error='Method not allowed')), 405)
 
+
 @app.route('/')
 def index():
     return redirect("https://app.swaggerhub.com/apis/ridgekimani/bucket_list/1.0.0")
 
 app.register_blueprint(auth)
 app.register_blueprint(bucketlist)
+app.register_blueprint(callback)
 app.register_blueprint(search)

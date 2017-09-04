@@ -207,8 +207,8 @@ class Bucket(db.Model):
         :return: serialized obj
         """
         serialized_obj = dict(id=self.id, bucket_name=self.bucket_name,
-                              created=self.created, user=self.user.email,
-                              description=self.description, updated=self.updated)
+                              created=str(self.created.date()), user=self.user.email,
+                              description=self.description, updated=str(self.updated))
         return serialized_obj
 
     @staticmethod
@@ -299,8 +299,8 @@ class Activity(db.Model):
         :return: serialized obj
         """
         serialized_obj = dict(activity_id=self.id, description=self.description,
-                              user=self.user.email, created=self.created,
-                              bucket_id=self.bucket.id, updated=self.updated)
+                              user=self.user.email, created=str(self.created.date()),
+                              bucket_id=self.bucket.id, updated=str(self.updated.date()))
         return serialized_obj
 
     @staticmethod
