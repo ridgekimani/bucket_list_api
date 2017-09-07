@@ -1,8 +1,11 @@
 from flask import Flask, make_response, jsonify, redirect
+from flask_cors import CORS
 
 from settings.settings import app_config
 
 app = Flask(__name__)
+
+CORS(app)
 
 app.config.from_object(app_config['development'])
 
