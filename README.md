@@ -3,10 +3,7 @@ This is your day to day activity recording app as a restful web service used to 
 operations of Bucket and Items.
 [![Build Status](https://travis-ci.org/ridgekimani/bucket_list_api.svg?branch=master)](https://travis-ci.org/ridgekimani/bucket_list_api)
 [![Coverage Status](https://coveralls.io/repos/github/ridgekimani/bucket_list_api/badge.svg?branch=master)](https://coveralls.io/github/ridgekimani/bucket_list_api?branch=master)
-![python](https://img.shields.io/badge/python-3.6%203.5-green.svg)
-![flask](https://img.shields.io/badge/flask-0.12.2-blue.svg)
  
-
 ## AUTH API endpoints
 ### 1. Register User 
 
