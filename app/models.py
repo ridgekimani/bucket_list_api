@@ -206,7 +206,8 @@ class Bucket(db.Model):
         Returns a serialized object of the bucket
         :return: serialized obj
         """
-        serialized_obj = dict(id=self.id, bucket_name=self.bucket_name,
+        category = Category.query.filter_by(id=self.category_id).first().category_name
+        serialized_obj = dict(id=self.id, bucket_name=self.bucket_name, category=category,
                               created=str(self.created.date()), user=self.user.email,
                               description=self.description, updated=str(self.updated))
         return serialized_obj

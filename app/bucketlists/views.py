@@ -30,6 +30,10 @@ class BucketListsApi(MethodView):
         user = User.query.filter_by(email=email).first()
 
         if bucket_id:
+
+            if not Bucket.exists(bucket_id, user.id):
+                return make_response(jsonify({"error": "Bucket not found"}), 404)
+
             bucket = Bucket.query.filter_by(user=user, id=bucket_id).first()
             return make_response(jsonify(bucket=bucket.serialize), 200)
 
@@ -191,8 +195,15 @@ class ItemsApi(MethodView):
             return make_response(jsonify(error='Please specify your bucket id'), 400)
 
         if item_id and bucket_id:
+
+            if not Activity.exists(bucket_id, user.id, item_id):
+                return make_response(jsonify({"error": "Bucket or activity not found"}), 404)
+
             act = Activity.query.filter_by(bucket_id=bucket_id, user=user, id=item_id).first()
             return make_response(jsonify(activity=act.serialize))
+
+        if not Bucket.exists(bucket_id, user.id):
+            return make_response(jsonify({"error": "Bucket not found"}), 404)
 
         limit = request.args.get('limit')
         page = request.args.get('page', 1)
