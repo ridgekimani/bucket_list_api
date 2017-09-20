@@ -56,7 +56,7 @@ class RegisterApi(MethodView):
 
         token = user.generate_token()
         session['user'] = user.email
-        response = make_response(jsonify(dict(success='Account created successfully')))
+        response = make_response(jsonify(dict(success='Account created successfully', token=token)))
         response.headers['token'] = token
         return response
 
