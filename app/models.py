@@ -206,10 +206,14 @@ class Bucket(db.Model):
         Returns a serialized object of the bucket
         :return: serialized obj
         """
-        category = Category.query.filter_by(id=self.category_id).first().category_name
-        serialized_obj = dict(id=self.id, bucket_name=self.bucket_name, category=category,
+        category = Category.query.filter_by(id=self.category_id).first()
+        serialized_obj = dict(id=self.id, bucket_name=self.bucket_name,
                               created=str(self.created.date()), user=self.user.email,
                               description=self.description, updated=str(self.updated))
+
+        if category:
+            serialized_obj['category'] = category.category_name
+
         return serialized_obj
 
     @staticmethod
