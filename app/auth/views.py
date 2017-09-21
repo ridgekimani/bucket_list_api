@@ -40,8 +40,8 @@ class RegisterApi(MethodView):
             return make_response(jsonify(dict(error='Please enter your password')), 400)
 
         if len(password) < 6:
-            return make_response(jsonify(dict(error='Your password must be 6 characters long and above')),
-                                 400)
+            return make_response(jsonify(dict(error='Your password must be 6 characters '
+                                                    'long and above')), 400)
 
         if not confirm_password:
             return make_response(jsonify(dict(error='Please confirm your password')), 400)
@@ -53,11 +53,12 @@ class RegisterApi(MethodView):
             return make_response(jsonify(dict(error='A user exists with that email')), 409)
 
         user = User(email=email, password=password).save()
-
         token = user.generate_token()
+
         session['user'] = user.email
-        response = make_response(jsonify(dict(success='Account created successfully', token=token)))
-        response.headers['token'] = token
+        response = make_response(jsonify(dict(success='Account created successfully',
+                                              token=token.decode())))
+        response.headers['token'] = token.decode()
         return response
 
 
